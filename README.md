@@ -1,35 +1,80 @@
-# FFWD Trailer Kitchen v0.6.0 🍳
+# FFWD Trailer Kitchen v0.7.0 🍳
 
 > *Agentic Video Highlight Platform*
 
-Video Kitchen v0.6.0 transforms video into highlights, teasers, and social clips using an AI-powered pipeline.
+Video Kitchen v0.7.0 transforms video into highlights, teasers, and social clips using an AI-powered pipeline with a full REST API and web dashboard.
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────┐
+│              Video Kitchen v0.7.0                    │
+├─────────────────────────────────────────────────────┤
+│  Dashboard (HTML) │  OpenClaw Agent  │  CLI (Python) │
+├─────────────────────────────────────────────────────┤
+│              Express REST API (Node.js)               │
+│  /projects CRUD  │  /jobs Queue/Run  │  /kitchen/tools │
+├─────────────────────────────────────────────────────┤
+│              SQLite Database                          │
+│  projects │ scenes │ jobs │ outputs │ recipes         │
+├─────────────────────────────────────────────────────┤
+│              Python Pipeline Engine                   │
+│  prep → scoring → select → plate → season → qc       │
+└─────────────────────────────────────────────────────┘
+```
 
 ## Quick Start
 
 ```bash
-# Install dependencies
-cd scripts
+# 1. Clone & install Python deps
+git clone https://github.com/snyderline0987/VideoKitchen.git
+cd VideoKitchen
 python3 -m venv .venv
-source .venv/bin/activate
-pip install -r ../requirements.txt
+.venv/bin/pip install -r requirements.txt
 
-# Full auto: process a video
-python3 kitchen.py --open video.mp4 --recipe social_teaser_w24 --auto
+# 2. Install backend
+cd backend
+npm install
+node scripts/init-db.js
+node scripts/seed-recipes.js
+
+# 3. Start API server
+node server.js
+# → http://localhost:3001
+
+# 4. Open dashboard
+cd ../dashboard
+open index.html
+```
+
+## Python Pipeline (CLI)
+
+```bash
+# Full auto
+.venv/bin/python3 scripts/kitchen.py --open video.mp4 --recipe social_teaser_w24 --auto
 
 # Step by step
-python3 kitchen.py --open video.mp4 --transcribe
-python3 kitchen.py --analyze --project my_project
-python3 kitchen.py --select --auto --recipe spicy_trailer --project my_project
-python3 kitchen.py --plate --project my_project
-python3 kitchen.py --season --vo "Check this out!" --project my_project
-python3 kitchen.py --qc --project my_project
-
-# List projects
-python3 kitchen.py --list
-
-# Project info
-python3 kitchen.py --info --project my_project
+.venv/bin/python3 scripts/kitchen.py --open video.mp4 --transcribe
+.venv/bin/python3 scripts/kitchen.py --analyze --project my_project
+.venv/bin/python3 scripts/kitchen.py --select --auto --recipe spicy_trailer --project my_project
+.venv/bin/python3 scripts/kitchen.py --plate --project my_project
+.venv/bin/python3 scripts/kitchen.py --season --vo "Check this out!" --project my_project
+.venv/bin/python3 scripts/kitchen.py --qc --project my_project
 ```
+
+## API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/health` | GET | Health check |
+| `/api/projects` | GET/POST | List/Create projects |
+| `/api/projects/:id` | GET/PATCH/DELETE | Project CRUD |
+| `/api/jobs` | GET/POST | List/Create jobs |
+| `/api/jobs/:id` | GET | Job status + logs |
+| `/api/jobs/:id/run` | POST | Execute pipeline job |
+| `/api/kitchen/tools/:tool` | POST | OpenClaw tool integration |
+| `/api/recipes` | GET | List recipes |
+| `/api/outputs` | GET | List outputs |
 
 ## Pipeline Stages
 
@@ -51,35 +96,29 @@ python3 kitchen.py --info --project my_project
 | `highlight_abendsendung` | 60-90s | 16:9 | Broadcast highlight |
 | `bts_soup` | 45-60s | 1:1 | Behind the scenes |
 
-## Storage
+## Docker
 
+```bash
+docker compose up -d
+# → API on http://localhost:3001
 ```
-projects/
-└── {project_id}/
-    ├── project.json      # Project metadata
-    ├── scenes.json       # Detected + scored scenes
-    ├── transcript.json   # Full transcript
-    ├── selection.json    # Scene selection
-    ├── outputs.json      # Rendered outputs
-    ├── thumbnails/       # Scene thumbnails
-    ├── outputs/          # Rendered videos
-    └── qc/              # QC reports
-```
-
-## Architecture (Planned)
-
-v0.6.0 adds three layers on top of the pipeline:
-
-1. **Pipeline Engine** — Scene detection + AI scoring + MoviePy assembly ✅ (Phase 1)
-2. **Agentic Backend** — Express API + SQLite + OpenClaw tools (Phase 2)
-3. **Web Dashboard** — Next.js cinematic UI (Phase 3)
 
 ## Requirements
 
 - Python 3.11+
+- Node.js 18+
 - ffmpeg (system)
-- OpenCV (for visual scoring)
 - OpenAI API key (for Whisper transcription + LLM scoring)
+
+## What's New in v0.7.0
+
+- ✅ **Express REST API** — Full CRUD for projects, jobs, outputs, recipes
+- ✅ **SQLite Database** — Persistent storage with WAL mode
+- ✅ **Job Queue** — In-memory job queue with Python subprocess execution
+- ✅ **Web Dashboard** — Dark-themed dashboard for project management
+- ✅ **OpenClaw Tools** — `/api/kitchen/tools/*` endpoints for agent integration
+- ✅ **Docker Support** — Dockerfile + docker-compose.yml
+- ✅ **Python venv** — Isolated dependency management
 
 ## License
 

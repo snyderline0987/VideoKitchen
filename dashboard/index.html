@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Video Kitchen v0.7.0 — Agentic Video Platform</title>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #131320;
+    --surface2: #1a1a2e;
+    --border: #2a2a40;
+    --text: #e8e8f0;
+    --text-dim: #8888a0;
+    --accent: #ff6b35;
+    --accent-glow: rgba(255, 107, 53, 0.15);
+    --green: #34d399;
+    --yellow: #fbbf24;
+    --red: #f87171;
+    --blue: #60a5fa;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  .app { display: grid; grid-template-columns: 280px 1fr; grid-template-rows: auto 1fr; min-height: 100vh; }
+
+  /* Header */
+  .header { grid-column: 1 / -1; padding: 20px 32px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--surface); }
+  .header h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+  .header h1 span { color: var(--accent); }
+  .header-badge { font-size: 11px; background: var(--accent-glow); color: var(--accent); padding: 4px 10px; border-radius: 20px; font-weight: 600; }
+
+  /* Sidebar */
+  .sidebar { background: var(--surface); border-right: 1px solid var(--border); padding: 24px 0; overflow-y: auto; }
+  .sidebar h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-dim); padding: 0 24px; margin-bottom: 12px; }
+  .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 24px; cursor: pointer; font-size: 14px; color: var(--text-dim); transition: all 0.15s; border-left: 3px solid transparent; }
+  .nav-item:hover { background: var(--surface2); color: var(--text); }
+  .nav-item.active { color: var(--accent); background: var(--accent-glow); border-left-color: var(--accent); }
+  .nav-icon { font-size: 18px; width: 24px; text-align: center; }
+
+  /* Main content */
+  .main { padding: 32px; overflow-y: auto; }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* Cards */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .card-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+
+  /* Stats grid */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .stat-value { font-size: 28px; font-weight: 700; }
+  .stat-label { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
+
+  /* Table */
+  .table { width: 100%; border-collapse: collapse; }
+  .table th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); padding: 10px 16px; border-bottom: 1px solid var(--border); }
+  .table td { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .table tr:hover { background: var(--surface2); }
+
+  /* Badges */
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .badge-done { background: rgba(52, 211, 153, 0.15); color: var(--green); }
+  .badge-running { background: rgba(251, 191, 36, 0.15); color: var(--yellow); }
+  .badge-failed { background: rgba(248, 113, 113, 0.15); color: var(--red); }
+  .badge-queued { background: rgba(96, 165, 250, 0.15); color: var(--blue); }
+  .badge-uploaded { background: rgba(96, 165, 250, 0.15); color: var(--blue); }
+  .badge-prepped { background: rgba(251, 191, 36, 0.15); color: var(--yellow); }
+
+  /* Buttons */
+  .btn { padding: 8px 18px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); color: var(--text); font-size: 13px; cursor: pointer; transition: all 0.15s; font-weight: 500; }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #e85a28; }
+  .btn-sm { padding: 5px 12px; font-size: 12px; }
+  .btn-danger { border-color: var(--red); color: var(--red); }
+
+  /* Forms */
+  .form-group { margin-bottom: 16px; }
+  .form-label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .form-input, .form-select { width: 100%; padding: 10px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 14px; }
+  .form-input:focus, .form-select:focus { outline: none; border-color: var(--accent); }
+
+  /* Scene grid */
+  .scene-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+  .scene-card { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; cursor: pointer; transition: all 0.15s; }
+  .scene-card:hover { border-color: var(--accent); }
+  .scene-card.selected { border-color: var(--accent); box-shadow: 0 0 12px var(--accent-glow); }
+  .scene-thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; background: var(--surface2); display: flex; align-items: center; justify-content: center; color: var(--text-dim); font-size: 12px; }
+  .scene-meta { padding: 10px; }
+  .scene-score { font-size: 18px; font-weight: 700; color: var(--accent); }
+  .scene-time { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+
+  /* Recipe cards */
+  .recipe-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+  .recipe-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.15s; }
+  .recipe-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .recipe-card.selected { border-color: var(--accent); box-shadow: 0 0 20px var(--accent-glow); }
+  .recipe-emoji { font-size: 32px; margin-bottom: 12px; }
+  .recipe-name { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+  .recipe-meta { font-size: 12px; color: var(--text-dim); }
+
+  /* Job log */
+  .job-log { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; line-height: 1.6; max-height: 400px; overflow-y: auto; white-space: pre-wrap; color: var(--text-dim); }
+
+  /* Empty state */
+  .empty { text-align: center; padding: 60px 20px; color: var(--text-dim); }
+  .empty-icon { font-size: 48px; margin-bottom: 16px; }
+  .empty h3 { font-size: 18px; color: var(--text); margin-bottom: 8px; }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 20px; font-size: 14px; transform: translateY(100px); opacity: 0; transition: all 0.3s; z-index: 100; }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .app { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .main { padding: 16px; }
+  }
+
+  /* Animations */
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+  .pulse { animation: pulse 2s infinite; }
+
+  /* Pipeline steps */
+  .pipeline-steps { display: flex; gap: 4px; align-items: center; margin: 12px 0; }
+  .step { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; background: var(--bg); border: 1px solid var(--border); color: var(--text-dim); }
+  .step.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .step.done { background: rgba(52, 211, 153, 0.15); border-color: var(--green); color: var(--green); }
+  .step-arrow { color: var(--text-dim); font-size: 10px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="header">
+    <h1>🍳 <span>Video Kitchen</span> v0.7.0</h1>
+    <div class="header-badge">Agentic Video Platform</div>
+  </header>
+
+  <nav class="sidebar">
+    <h3>Navigation</h3>
+    <div class="nav-item active" data-page="dashboard"><span class="nav-icon">📊</span> Dashboard</div>
+    <div class="nav-item" data-page="projects"><span class="nav-icon">🎬</span> Projects</div>
+    <div class="nav-item" data-page="recipes"><span class="nav-icon">📖</span> Recipes</div>
+    <div class="nav-item" data-page="new-project"><span class="nav-icon">➕</span> New Project</div>
+  </nav>
+
+  <main class="main">
+    <!-- Dashboard -->
+    <div class="page active" id="page-dashboard">
+      <h2 style="margin-bottom:24px;">Dashboard</h2>
+      <div class="stats" id="stats-grid">
+        <div class="stat"><div class="stat-value" id="stat-projects">-</div><div class="stat-label">Projects</div></div>
+        <div class="stat"><div class="stat-value" id="stat-jobs">-</div><div class="stat-label">Active Jobs</div></div>
+        <div class="stat"><div class="stat-value" id="stat-outputs">-</div><div class="stat-label">Outputs</div></div>
+        <div class="stat"><div class="stat-value" id="stat-recipes">-</div><div class="stat-label">Recipes</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">📋 Recent Jobs</div>
+        <table class="table">
+          <thead><tr><th>ID</th><th>Project</th><th>Type</th><th>Status</th><th>Created</th></tr></thead>
+          <tbody id="jobs-table"></tbody>
+        </table>
+        <div class="empty" id="jobs-empty" style="display:none;">
+          <div class="empty-icon">📭</div>
+          <h3>No jobs yet</h3>
+          <p>Create a project and run the pipeline to see jobs here.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Projects -->
+    <div class="page" id="page-projects">
+      <h2 style="margin-bottom:24px;">Projects</h2>
+      <div id="projects-list"></div>
+    </div>
+
+    <!-- Recipes -->
+    <div class="page" id="page-recipes">
+      <h2 style="margin-bottom:24px;">Recipes</h2>
+      <div class="recipe-grid" id="recipes-grid"></div>
+    </div>
+
+    <!-- New Project -->
+    <div class="page" id="page-new-project">
+      <h2 style="margin-bottom:24px;">New Project</h2>
+      <div class="card" style="max-width:500px;">
+        <div class="card-title">🎬 Create Project</div>
+        <div class="form-group">
+          <label class="form-label">Title</label>
+          <input class="form-input" id="new-title" placeholder="My Video Project">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Video Source (path or URL)</label>
+          <input class="form-input" id="new-source" placeholder="/path/to/video.mp4">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Recipe</label>
+          <select class="form-select" id="new-recipe"></select>
+        </div>
+        <button class="btn btn-primary" id="btn-create-project">Create & Run Pipeline</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = window.location.port === '3001' ? '' : 'http://localhost:3001';
+
+// ─── State ─────────────────────────────────────────────────
+let projects = [];
+let jobs = [];
+let recipes = [];
+
+// ─── Navigation ────────────────────────────────────────────
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    item.classList.add('active');
+    document.getElementById('page-' + item.dataset.page).classList.add('active');
+  });
+});
+
+// ─── Toast ─────────────────────────────────────────────────
+function toast(msg, duration = 3000) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), duration);
+}
+
+// ─── API helpers ───────────────────────────────────────────
+async function api(path, opts = {}) {
+  try {
+    const res = await fetch(API + path, { headers: { 'Content-Type': 'application/json', ...opts.headers }, ...opts });
+    return await res.json();
+  } catch (e) {
+    console.error('API error:', e);
+    toast('API connection failed — is the backend running on port 3001?');
+    return null;
+  }
+}
+
+// ─── Load data ─────────────────────────────────────────────
+async function loadDashboard() {
+  projects = (await api('/api/projects')) || [];
+  jobs = (await api('/api/jobs')) || [];
+  recipes = (await api('/api/recipes')) || [];
+
+  document.getElementById('stat-projects').textContent = projects.length;
+  document.getElementById('stat-jobs').textContent = jobs.filter(j => j.status === 'running' || j.status === 'queued').length;
+  const outputs = projects.reduce((acc, p) => acc + (p.outputs?.length || 0), 0);
+  document.getElementById('stat-outputs').textContent = outputs;
+  document.getElementById('stat-recipes').textContent = recipes.length;
+
+  // Jobs table
+  const tbody = document.getElementById('jobs-table');
+  const empty = document.getElementById('jobs-empty');
+  if (jobs.length === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+  } else {
+    empty.style.display = 'none';
+    tbody.innerHTML = jobs.slice(0, 10).map(j => `
+      <tr>
+        <td style="font-family:monospace;">${j.id}</td>
+        <td>${j.project_id}</td>
+        <td>${j.type}</td>
+        <td><span class="badge badge-${j.status}">${j.status}</span></td>
+        <td>${new Date(j.created_at).toLocaleString()}</td>
+      </tr>
+    `).join('');
+  }
+}
+
+async function loadProjects() {
+  projects = (await api('/api/projects')) || [];
+  const container = document.getElementById('projects-list');
+  if (projects.length === 0) {
+    container.innerHTML = '<div class="empty"><div class="empty-icon">🎬</div><h3>No projects yet</h3><p>Create your first project to get started.</p></div>';
+    return;
+  }
+  container.innerHTML = projects.map(p => `
+    <div class="card">
+      <div class="card-title">
+        ${p.title || p.id}
+        <span class="badge badge-${p.status}">${p.status}</span>
+      </div>
+      <p style="color:var(--text-dim);font-size:13px;margin-bottom:12px;">
+        ${p.scene_count || 0} scenes · Recipe: ${p.recipe_id || 'none'} · Created ${new Date(p.created_at).toLocaleDateString()}
+      </p>
+      <div class="pipeline-steps">
+        <span class="step ${['uploaded','prepped','analyzed','plated','seasoned','done'].indexOf(p.status) >= 0 ? 'done' : ''}">📤 Upload</span>
+        <span class="step-arrow">→</span>
+        <span class="step ${['prepped','analyzed','plated','seasoned','done'].indexOf(p.status) >= 0 ? 'done' : ''}">🔪 Prep</span>
+        <span class="step-arrow">→</span>
+        <span class="step ${['analyzed','plated','seasoned','done'].indexOf(p.status) >= 0 ? 'done' : ''}">🧠 Analyze</span>
+        <span class="step-arrow">→</span>
+        <span class="step ${['plated','seasoned','done'].indexOf(p.status) >= 0 ? 'done' : ''}">🍽️ Plate</span>
+        <span class="step-arrow">→</span>
+        <span class="step ${['seasoned','done'].indexOf(p.status) >= 0 ? 'done' : ''}">🎵 Season</span>
+        <span class="step-arrow">→</span>
+        <span class="step ${p.status === 'done' ? 'done' : ''}">✅ Done</span>
+      </div>
+      <div style="margin-top:12px;display:flex;gap:8px;">
+        <button class="btn btn-sm" onclick="runAutoPipeline('${p.id}')">▶ Run Auto Pipeline</button>
+        <button class="btn btn-sm" onclick="viewProject('${p.id}')">📋 Details</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteProject('${p.id}')">🗑️</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function loadRecipes() {
+  recipes = (await api('/api/recipes')) || [];
+  const grid = document.getElementById('recipes-grid');
+  const emojis = { social_teaser_w24: '📱', spicy_trailer: '🌶️', highlight_abendsendung: '📺', bts_soup: '🥣' };
+  grid.innerHTML = recipes.map(r => `
+    <div class="recipe-card">
+      <div class="recipe-emoji">${emojis[r.id] || '🍳'}</div>
+      <div class="recipe-name">${r.name}</div>
+      <div class="recipe-meta">
+        Duration: ${r.config.target_duration} · Aspect: ${r.config.aspect_ratio}<br>
+        Music: ${r.config.music_mood} · Transitions: ${r.config.transitions}
+      </div>
+    </div>
+  `).join('');
+
+  // Also populate new project select
+  const sel = document.getElementById('new-recipe');
+  sel.innerHTML = recipes.map(r => `<option value="${r.id}">${r.name}</option>`).join('');
+}
+
+// ─── Actions ───────────────────────────────────────────────
+async function createProject() {
+  const title = document.getElementById('new-title').value;
+  const source = document.getElementById('new-source').value;
+  const recipe = document.getElementById('new-recipe').value;
+  if (!source) { toast('Please provide a video source path'); return; }
+  const project = await api('/api/projects', {
+    method: 'POST',
+    body: JSON.stringify({ title: title || source.split('/').pop(), source, recipe_id: recipe })
+  });
+  if (!project) return;
+  toast('Project created! Starting pipeline...');
+  await runAutoPipeline(project.id);
+  document.getElementById('new-title').value = '';
+  document.getElementById('new-source').value = '';
+}
+
+async function runAutoPipeline(projectId) {
+  toast('Queuing auto pipeline...');
+  const job = await api('/api/jobs', {
+    method: 'POST',
+    body: JSON.stringify({ project_id: projectId, type: 'auto', recipe_id: undefined, params: {} })
+  });
+  if (!job) return;
+  await api(`/api/jobs/${job.id}/run`, { method: 'POST' });
+  toast('Pipeline started! Job: ' + job.id);
+  setTimeout(loadDashboard, 3000);
+}
+
+async function deleteProject(projectId) {
+  if (!confirm('Delete this project?')) return;
+  await api(`/api/projects/${projectId}`, { method: 'DELETE' });
+  toast('Project deleted');
+  loadProjects();
+  loadDashboard();
+}
+
+async function viewProject(projectId) {
+  const p = await api(`/api/projects/${projectId}`);
+  if (!p) return;
+
+  const container = document.getElementById('projects-list');
+  let scenesHtml = '';
+  if (p.scenes && p.scenes.length > 0) {
+    scenesHtml = `
+      <div class="card" style="margin-top:16px;">
+        <div class="card-title">🔪 Scenes (${p.scenes.length})</div>
+        <div class="scene-grid">
+          ${p.scenes.map(s => `
+            <div class="scene-card ${s.selected ? 'selected' : ''}">
+              <div class="scene-thumb">${s.thumbnail ? `<img src="${API}/thumbnails/${s.thumbnail.split('/').pop()}" style="width:100%;aspect-ratio:16/9;object-fit:cover;" onerror="this.parentElement.textContent='🔒'">` : '🔒'}</div>
+              <div class="scene-meta">
+                <div class="scene-score">${(s.combined_score || 0).toFixed(3)}</div>
+                <div class="scene-time">${s.start_time.toFixed(1)}s – ${s.end_time.toFixed(1)}s (${s.duration.toFixed(1)}s)</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  let jobsHtml = '';
+  if (p.jobs && p.jobs.length > 0) {
+    const latestJob = p.jobs[0];
+    jobsHtml = `
+      <div class="card" style="margin-top:16px;">
+        <div class="card-title">📋 Latest Job <span class="badge badge-${latestJob.status}">${latestJob.status}</span></div>
+        ${latestJob.logs ? `<div class="job-log">${latestJob.logs.substring(-2000)}</div>` : '<p style="color:var(--text-dim);font-size:13px;">No logs yet.</p>'}
+      </div>
+    `;
+  }
+
+  container.innerHTML = `
+    <div class="card">
+      <div class="card-title">${p.title || p.id}</div>
+      <p style="color:var(--text-dim);font-size:13px;margin-bottom:8px;">
+        Source: ${p.source || 'N/A'}<br>
+        Status: <span class="badge badge-${p.status}">${p.status}</span> · Scenes: ${p.scene_count} · Created: ${new Date(p.created_at).toLocaleString()}
+      </p>
+      <button class="btn btn-sm" onclick="loadProjects()">← Back to projects</button>
+      <button class="btn btn-sm" style="margin-left:8px;" onclick="runAutoPipeline('${p.id}')">▶ Run Pipeline</button>
+    </div>
+    ${scenesHtml}
+    ${jobsHtml}
+  `;
+}
+
+// ─── Init ──────────────────────────────────────────────────
+document.getElementById('btn-create-project').addEventListener('click', createProject);
+
+async function init() {
+  await loadRecipes();
+  await loadDashboard();
+  await loadProjects();
+}
+
+init();
+setInterval(loadDashboard, 10000);
+</script>
+</body>
+</html>

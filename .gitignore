@@ -1,0 +1,10 @@
+node_modules/
+data/
+.venv/
+projects/
+*.db
+*.db-shm
+*.db-wal
+__pycache__/
+.env
+.DS_Store

@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  video-kitchen:
+    build: .
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - DB_PATH=/app/data/video_kitchen.db
+      - PROJECTS_BASE_DIR=/app/projects
+      - KITCHEN_SCRIPTS_DIR=/app/scripts
+      - PYTHON_PATH=python3
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY}
+    volumes:
+      - vk-projects:/app/projects
+      - vk-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  vk-projects:
+  vk-data:
