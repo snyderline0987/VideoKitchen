@@ -430,22 +430,40 @@ app.delete('/api/chat', async (req, res) => {
   }
 });
 
-// Agent chat tool: dashboard messages → agent reads, agent responds
+// Agent bridge: dashboard user message → forward to OpenClaw agent → agent responds via /api/chat
+const GATEWAY_URL = process.env.OPENCLAW_GATEWAY_URL || 'http://127.0.0.1:18790';
+const GATEWAY_TOKEN = process.env.OPENCLAW_GATEWAY_TOKEN || '5e93eaf5b04e530384804460713c1f61e178d2af';
+
 app.post('/api/tools/video_kitchen_agent_chat', async (req, res) => {
   try {
     const { message } = req.body;
     if (!message) return res.status(400).json({ error: 'message required' });
-    // Store user message
-    await (async () => {
-      const id = uuidv4();
-      const dbConn = await db.getDb();
-      await dbConn.run('INSERT INTO chat_messages (id, role, content, format) VALUES (?, ?, ?, ?)',
-        [id, 'user', message, 'text']);
-      broadcastChat({ id, role: 'user', content: message, format: 'text', created_at: new Date().toISOString() });
-    })();
-    // Return a placeholder — agent will respond via POST /api/chat
+    // 1. Store user message
+    const id = uuidv4();
+    const dbConn = await db.getDb();
+    await dbConn.run('INSERT INTO chat_messages (id, role, content, format) VALUES (?, ?, ?, ?)',
+      [id, 'user', message, 'text']);
+    const userMsg = { id, role: 'user', content: message, format: 'text', created_at: new Date().toISOString() };
+    broadcastChat(userMsg);
+
+    // 2. Forward to OpenClaw agent as a system event (so the main session picks it up)
+    const gwRes = await fetch(`${GATEWAY_URL}/api/events`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${GATEWAY_TOKEN}`
+      },
+      body: JSON.stringify({
+        type: 'dashboard_chat',
+        text: `[Dashboard Chat] ${message}`,
+        source: 'video-kitchen',
+        replyEndpoint: `${req.protocol}://${req.get('host')}/api/chat`
+      })
+    });
+
     res.json({ success: true, message: 'Message sent to agent' });
   } catch (err) {
+    console.error('Agent bridge error:', err);
     res.status(500).json({ error: err.message });
   }
 });

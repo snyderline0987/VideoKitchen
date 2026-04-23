@@ -488,11 +488,11 @@ async function sendChat() {
   const userMsg = { id: tempId, role: 'user', content: msg, format: 'text', created_at: new Date().toISOString() };
   chatMsgs.push(userMsg);
   renderChat();
-  // Send to backend
-  await api('/api/chat', { method: 'POST', body: JSON.stringify({ role: 'user', content: msg, format: 'text' }) });
-  // Show typing
+  // Show typing immediately
   chatMsgs.push({ id: 'typing', role: 'typing' });
   renderChat();
+  // Send to agent bridge (forwards to OpenClaw + stores in DB)
+  await api('/api/tools/video_kitchen_agent_chat', { method: 'POST', body: JSON.stringify({ message: msg }) });
 }
 
 async function clearChat() {
