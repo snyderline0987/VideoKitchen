@@ -5,7 +5,8 @@ const hardening = require('./production-hardening');
 
 const PROJECTS_DIR = process.env.PROJECTS_BASE_DIR || path.join(__dirname, '..', 'projects');
 const SCRIPTS_DIR = process.env.KITCHEN_SCRIPTS_DIR || path.join(__dirname, '..', 'scripts');
-const PYTHON_PATH = process.env.PYTHON_PATH || '/workspace/video-kitchen/.venv/bin/python3';
+const fs = require('fs');
+const PYTHON_PATH = process.env.PYTHON_PATH || path.join(__dirname, '..', '.venv', 'bin', 'python3');
 
 // In-memory job queue
 const jobQueue = [];
@@ -56,15 +57,33 @@ async function runJob(job) {
     logs: '' 
   });
 
+  // Download URL sources before pipeline
+  let sourcePath = project.source;
+  if (sourcePath && sourcePath.startsWith('http')) {
+    const projectDir = path.join(PROJECTS_DIR, job.project_id);
+    if (!fs.existsSync(projectDir)) fs.mkdirSync(projectDir, { recursive: true });
+    const localFile = path.join(projectDir, 'source.mp4');
+    if (!fs.existsSync(localFile)) {
+      console.log(`[JOB ${job.id}] Downloading: ${sourcePath}`);
+      const { execSync } = require('child_process');
+      execSync(`curl -sL -o "${localFile}" "${sourcePath}"`, { timeout: 300000 });
+      console.log(`[JOB ${job.id}] Downloaded to: ${localFile}`);
+    }
+    sourcePath = localFile;
+    // Update project source to local file
+    const dbConn = await db.getDb();
+    await dbConn.run('UPDATE projects SET source = ? WHERE id = ?', [localFile, job.project_id]);
+  }
+
   // Build command
   const args = ['kitchen.py', '--project', job.project_id, '--base-dir', PROJECTS_DIR];
   
   if (job.type === 'auto') {
     args.push('--auto');
     if (job.recipe_id) args.push('--recipe', job.recipe_id);
-    if (project.source) args.push('--open', project.source);
+    if (sourcePath) args.push('--open', sourcePath);
   } else if (job.type === 'prep') {
-    args.push('--open', project.source);
+    args.push('--open', sourcePath);
     args.push('--transcribe');
   } else {
     args.push(`--${job.type}`);

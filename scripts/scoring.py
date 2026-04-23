@@ -659,11 +659,37 @@ class ScoringEngine:
 
     # ─── Persistence ───────────────────────────────────────
 
+    @staticmethod
+    def _convert_numpy(obj):
+        """Convert numpy types to native Python for JSON serialization."""
+        import numpy as np
+        if isinstance(obj, (np.integer,)):
+            return int(obj)
+        if isinstance(obj, (np.floating,)):
+            return float(obj)
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return obj
+
     def _save_scenes(self, scenes: list[dict]) -> None:
         """Save scored scenes to project directory."""
+        import numpy as np
+        # Sanitize numpy types
+        def sanitize(obj):
+            if isinstance(obj, dict):
+                return {k: sanitize(v) for k, v in obj.items()}
+            if isinstance(obj, list):
+                return [sanitize(v) for v in obj]
+            if isinstance(obj, (np.integer,)):
+                return int(obj)
+            if isinstance(obj, (np.floating,)):
+                return float(obj)
+            if isinstance(obj, np.ndarray):
+                return obj.tolist()
+            return obj
         output_path = self.project_dir / "scenes.json"
         with open(output_path, "w") as f:
-            json.dump(scenes, f, indent=2, ensure_ascii=False)
+            json.dump(sanitize(scenes), f, indent=2, ensure_ascii=False)
         print(f"[SCORE] Scored scenes saved to {output_path}")
 
     def _print_summary(self, sorted_scenes: list[dict]) -> None:

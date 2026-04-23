@@ -22,6 +22,7 @@ if (!fs.existsSync(PROJECTS_DIR)) {
 
 app.use(cors());
 app.use(express.json());
+app.use(express.static(path.join(__dirname, '..', 'dashboard')));
 
 // ─── Health ───────────────────────────────────────────────────────
 
