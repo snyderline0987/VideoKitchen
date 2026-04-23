@@ -76,6 +76,23 @@ const TOOL_DEFINITIONS = {
       },
       required: ['w24_url']
     }
+  },
+  'video_kitchen_dashboard_reply': {
+    name: 'video_kitchen_dashboard_reply',
+    description: 'Send a rich reply to the Video Kitchen dashboard chat. Supports markdown text, filmstrip scenes, scene cards, output cards, progress bars, and pipeline status.',
+    parameters: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', description: 'Message text (markdown supported: **bold**, `code`, [success:text], [error:text], [info:text], [warn:text])' },
+        format: { type: 'string', enum: ['text', 'markdown', 'rich'], default: 'rich', description: 'Message format' },
+        scenes: { type: 'array', description: 'Filmstrip scenes [{start, end, score, title, project_id}]' },
+        scene_card: { type: 'object', description: 'Single scene card {start, end, score, title, thumbnail}' },
+        output: { type: 'object', description: 'Output card {id, filename, duration, size}' },
+        progress: { type: 'object', description: 'Progress bar {label, percent}' },
+        pipeline: { type: 'object', description: 'Pipeline status {current: step_name}' }
+      },
+      required: ['message']
+    }
   }
 };
 
@@ -94,6 +111,8 @@ async function executeTool(toolName, params) {
       return await listOutputs(params);
     case 'video_kitchen_process_w24':
       return await processW24(params);
+    case 'video_kitchen_dashboard_reply':
+      return await dashboardReply(params);
     default:
       throw new Error(`Unknown tool: ${toolName}`);
   }
@@ -309,6 +328,32 @@ async function handleWebhook(payload, signature) {
   return { received: true, job_id, status };
 }
 
+/**
+ * Send a rich reply to the Video Kitchen dashboard chat
+ */
+async function dashboardReply({ message, format = 'rich', scenes, scene_card, output, progress, pipeline }) {
+  const { v4: uuidv4 } = require('uuid');
+  const metadata = {};
+  if (scenes) metadata.scenes = scenes;
+  if (scene_card) metadata.scene_card = scene_card;
+  if (output) metadata.output = output;
+  if (progress) metadata.progress = progress;
+  if (pipeline) metadata.pipeline = pipeline;
+  if (Object.keys(metadata).length > 0) metadata.text = message;
+
+  try {
+    const res = await axios.post(`${API_BASE}/api/chat`, {
+      role: 'assistant',
+      content: message,
+      format,
+      ...(Object.keys(metadata).length > 0 ? { metadata } : {})
+    });
+    return { success: true, message_id: res.data?.id, format };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+}
+
 module.exports = {
   TOOL_DEFINITIONS,
   executeTool,
@@ -317,5 +362,6 @@ module.exports = {
   runPipeline,
   getStatus,
   listOutputs,
-  processW24
+  processW24,
+  dashboardReply
 };

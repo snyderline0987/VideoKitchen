@@ -175,11 +175,36 @@ app.post('/api/tools/video_kitchen_agent_chat', async (req, res) => {
       [id, 'user', message, 'text']);
     const userMsg = { id, role: 'user', content: message, format: 'text', created_at: new Date().toISOString() };
     broadcastChat(userMsg);
+    forwardToTelegram(message);
     res.json({ success: true, message: 'Message sent to agent' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
+
+
+// ─── Telegram Bridge ──────────────────────────────────────────────
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || '6878645246';
+
+async function forwardToTelegram(userMessage) {
+  if (!TELEGRAM_BOT_TOKEN) return;
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: TELEGRAM_CHAT_ID,
+        text: `🎬 [VK Dashboard] ${userMessage}`,
+        parse_mode: 'Markdown'
+      })
+    });
+    const data = await res.json();
+    if (!data.ok) console.error('Telegram forward error:', data);
+  } catch (err) {
+    console.error('Telegram forward error:', err);
+  }
+}
 
 // ─── OpenClaw Agent Tools ─────────────────────────────────────────
 
