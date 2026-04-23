@@ -6,12 +6,12 @@
 <title>FFWD Media | Video Kitchen</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
 <style>
-:root{--bg:#0a0a0a;--sf:#111;--sf2:#161616;--sf3:#1c1c1c;--bd:rgba(255,255,255,.06);--bd2:rgba(255,255,255,.12);--tx:#e5e5e5;--tx2:#71717a;--tx3:#52525b;--amber:#f59e0b;--amber-g:rgba(245,158,11,.12);--green:#34d399;--red:#f87171;--blue:#60a5fa;--purple:#a78bfa;--side:240px;--chat:380px;--r:12px;--rs:8px}
+:root{--bg:#0a0a0a;--sf:#111;--sf2:#161616;--sf3:#1c1c1c;--bd:rgba(255,255,255,.06);--bd2:rgba(255,255,255,.12);--tx:#e5e5e5;--tx2:#71717a;--tx3:#52525b;--amber:#f59e0b;--ag:rgba(245,158,11,.12);--green:#34d399;--red:#f87171;--blue:#60a5fa;--purple:#a78bfa;--cyan:#22d3ee;--pink:#f472b6;--side:240px;--chat:420px;--r:12px;--rs:8px}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100dvh;overflow:hidden}
 .app{display:flex;min-height:100dvh}
 
-/* Sidebar */
+/* ── Sidebar ── */
 .side{position:fixed;left:0;top:0;bottom:0;width:var(--side);z-index:40;background:var(--bg);border-right:1px solid var(--bd);display:flex;flex-direction:column;transition:transform .3s}
 .side-brand{height:56px;display:flex;align-items:center;padding:0 16px;border-bottom:1px solid var(--bd)}
 .side-logo{width:32px;height:32px;border-radius:8px;background:var(--amber);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
@@ -22,21 +22,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .ni:hover{background:rgba(255,255,255,.04);color:var(--tx)}
 .ni.active{background:rgba(255,255,255,.08);color:var(--amber)}
 .ni svg{width:18px;height:18px;flex-shrink:0}
-.ni .bc{margin-left:auto;font-size:10px;font-weight:600;background:var(--amber-g);color:var(--amber);padding:2px 7px;border-radius:10px}
+.ni .bc{margin-left:auto;font-size:10px;font-weight:600;background:var(--ag);color:var(--amber);padding:2px 7px;border-radius:10px}
 .side-foot{padding:12px;border-top:1px solid var(--bd)}
-.api-st{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;background:rgba(255,255,255,.03);font-size:12px;color:var(--tx2);cursor:pointer}
+.api-st{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;background:rgba(255,255,255,.03);font-size:12px;color:var(--tx2);cursor:pointer;transition:all .15s}
 .api-st:hover{background:rgba(255,255,255,.06)}
 .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .dot.on{background:var(--green);box-shadow:0 0 6px rgba(52,211,153,.5)}
 .dot.off{background:var(--red)}
 .dot.load{background:var(--amber);animation:pulse 1.5s infinite}
 
-/* Main */
-.mw{flex:1;margin-left:var(--side);display:flex;flex-direction:column;transition:margin-right .3s}
-.mw.co{margin-right:var(--chat)}
+/* ── Main ── */
+.mw{flex:1;margin-left:var(--side);display:flex;flex-direction:column;transition:margin .3s}
 .main{flex:1;padding:24px 28px;overflow-y:auto;max-height:100vh}
 
-/* Pages */
+/* ── Pages ── */
 .pg{display:none;animation:fi .2s ease}.pg.act{display:block}
 @keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .ph{margin-bottom:28px}
@@ -44,20 +43,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .ph h1{font-size:28px;font-weight:700;letter-spacing:-.5px}
 .ph p{font-size:13px;color:var(--tx2);margin-top:4px}
 
-/* Stats */
+/* ── Stats ── */
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
 .st{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:18px 20px}
 .st .lb{font-size:11px;color:var(--tx2);font-weight:500;margin-bottom:8px}
 .st .vl{font-size:26px;font-weight:700;letter-spacing:-1px;font-variant-numeric:tabular-nums}
 
-/* Cards */
+/* ── Project Cards ── */
 .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
 .pc{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;transition:all .3s;cursor:pointer}
 .pc:hover{border-color:var(--bd2);transform:translateY(-2px)}
 .pc-thumb{position:relative;aspect-ratio:16/9;background:var(--sf2);overflow:hidden;display:flex;align-items:center;justify-content:center;color:var(--tx3);font-size:32px}
 .pc-thumb img{width:100%;height:100%;object-fit:cover}
 .pc-thumb .ov{position:absolute;inset:0;background:linear-gradient(to top,var(--sf) 0%,transparent 60%)}
-.pc-thumb .sb{position:absolute;top:10px;right:10px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;backdrop-filter:blur(8px)}
+.sb{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;backdrop-filter:blur(8px);display:inline-block}
 .sb-uploaded,.sb-queued{background:rgba(96,165,250,.2);color:var(--blue)}
 .sb-running{background:rgba(245,158,11,.2);color:var(--amber)}
 .sb-done,.sb-completed{background:rgba(52,211,153,.2);color:var(--green)}
@@ -66,145 +65,211 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .pc-info{padding:16px}
 .pc-info h3{font-size:15px;font-weight:600;margin-bottom:4px}
 .pc-info .meta{font-size:12px;color:var(--tx2);display:flex;gap:12px;flex-wrap:wrap}
-.pc-info .meta span{display:flex;align-items:center;gap:4px}
 .pc-act{display:flex;gap:6px;padding:0 16px 14px}
 
-/* Pipeline */
-.pipe{display:flex;align-items:center;gap:2px;padding:10px 16px}
+/* ── Pipeline ── */
+.pipe{display:flex;align-items:center;gap:2px;padding:10px 16px;flex-wrap:wrap}
 .pipe .ps{font-size:10px;padding:3px 8px;border-radius:4px;font-weight:600;background:var(--sf2);border:1px solid var(--bd);color:var(--tx3);white-space:nowrap}
 .pipe .ps.dn{background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.3);color:var(--green)}
-.pipe .ps.cr{background:var(--amber-g);border-color:rgba(245,158,11,.3);color:var(--amber)}
 .pipe .ar{color:var(--tx3);font-size:8px}
 
-/* Buttons */
+/* ── Buttons ── */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 16px;border-radius:var(--rs);font-size:13px;font-weight:500;border:1px solid var(--bd);background:var(--sf2);color:var(--tx);cursor:pointer;transition:all .15s;white-space:nowrap}
-.btn:hover{border-color:var(--bd2)}
-.btn-p{background:var(--amber);border-color:var(--amber);color:#0a0a0a;font-weight:600}
-.btn-p:hover{background:#d97706;border-color:#d97706}
-.btn-s{padding:5px 12px;font-size:12px}
-.btn-d{border-color:rgba(248,113,113,.3);color:var(--red)}
-.btn-d:hover{background:rgba(248,113,113,.1)}
-.btn-g{border:none;background:none;color:var(--tx2)}
-.btn-g:hover{color:var(--tx);background:rgba(255,255,255,.04)}
+.btn:hover{border-color:var(--bd2)}.btn-p{background:var(--amber);border-color:var(--amber);color:#0a0a0a;font-weight:600}
+.btn-p:hover{background:#d97706;border-color:#d97706}.btn-s{padding:5px 12px;font-size:12px}
+.btn-d{border-color:rgba(248,113,113,.3);color:var(--red)}.btn-d:hover{background:rgba(248,113,113,.1)}
+.btn-g{border:none;background:none;color:var(--tx2)}.btn-g:hover{color:var(--tx);background:rgba(255,255,255,.04)}
 
-/* Forms */
-.fg{margin-bottom:16px}
-.fl{display:block;font-size:11px;color:var(--tx2);margin-bottom:6px;font-weight:500;text-transform:uppercase;letter-spacing:.5px}
+/* ── Forms ── */
+.fg{margin-bottom:16px}.fl{display:block;font-size:11px;color:var(--tx2);margin-bottom:6px;font-weight:500;text-transform:uppercase;letter-spacing:.5px}
 .fi,.fs{width:100%;padding:10px 14px;background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs);color:var(--tx);font-size:14px;outline:none;transition:border .15s}
-.fi:focus,.fs:focus{border-color:var(--amber)}
-.fi::placeholder{color:var(--tx3)}
+.fi:focus,.fs:focus{border-color:var(--amber)}.fi::placeholder{color:var(--tx3)}
 
-/* Table */
+/* ── Table ── */
 .tw{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden}
 .tbl{width:100%;border-collapse:collapse}
 .tbl th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--tx2);font-weight:500;padding:10px 16px;border-bottom:1px solid var(--bd);background:var(--sf2)}
 .tbl td{padding:11px 16px;border-bottom:1px solid var(--bd);font-size:13px}
 .tbl tr:last-child td{border-bottom:none}
-.tbl tr:hover td{background:rgba(255,255,255,.02)}
 
-/* Job Card */
+/* ── Jobs ── */
 .jc{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:20px;margin-bottom:12px}
 .jh{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .jid{font-family:'SF Mono','Fira Code',monospace;font-size:12px;color:var(--tx2)}
 .pbar{height:4px;background:var(--sf2);border-radius:2px;overflow:hidden}
 .pfill{height:100%;background:var(--amber);border-radius:2px;transition:width .5s}
 
-/* Chat */
-.cpan{position:fixed;right:0;top:0;bottom:0;width:var(--chat);z-index:40;background:var(--bg);border-left:1px solid var(--bd);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s}
-.cpan.open{transform:translateX(0)}
-.ch{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid var(--bd)}
-.ch h3{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
-.cm{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
-.cmsg{max-width:90%;padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.5;word-wrap:break-word}
-.cmsg.u{align-self:flex-end;background:var(--amber);color:#0a0a0a;border-bottom-right-radius:4px}
-.cmsg.a{align-self:flex-start;background:var(--sf2);border:1px solid var(--bd);border-bottom-left-radius:4px}
-.cmsg.s{align-self:center;background:none;color:var(--tx2);font-size:11px;font-style:italic}
-.cmsg .mt{font-size:10px;opacity:.6;margin-top:4px}
-.ciw{padding:12px;border-top:1px solid var(--bd);display:flex;gap:8px}
-.ci{flex:1;padding:10px 14px;background:var(--sf2);border:1px solid var(--bd);border-radius:10px;color:var(--tx);font-size:13px;outline:none;resize:none;max-height:120px;min-height:40px;line-height:1.4;font-family:inherit}
-.ci:focus{border-color:var(--amber)}
-.ci::placeholder{color:var(--tx3)}
+/* ══════════════════════════════════════════════════════════════════
+   RICH CHAT PANEL — The Star of the Show
+   ══════════════════════════════════════════════════════════════════ */
+.chat-panel{
+  position:fixed;right:0;top:0;bottom:0;width:var(--chat);z-index:45;
+  background:var(--bg);border-left:1px solid var(--bd);
+  display:flex;flex-direction:column;
+  transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);
+}
+.chat-panel.open{transform:translateX(0)}
+.chat-hdr{
+  height:56px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;border-bottom:1px solid var(--bd);flex-shrink:0;
+  background:linear-gradient(180deg,rgba(245,158,11,.06) 0%,transparent 100%);
+}
+.chat-hdr h3{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
+.chat-hdr h3 .live{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px rgba(52,211,153,.5);animation:pulse 2s infinite}
+.chat-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:6px}
+.chat-msgs::-webkit-scrollbar{width:4px}
+.chat-msgs::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}
 
-/* Search */
+/* Message bubbles */
+.cmsg{max-width:92%;padding:0;font-size:13px;line-height:1.6;word-wrap:break-word}
+.cmsg.user{align-self:flex-end}
+.cmsg.user .cmsg-inner{background:var(--amber);color:#0a0a0a;border-radius:14px 14px 4px 14px;padding:10px 14px}
+.cmsg.assistant{align-self:flex-start}
+.cmsg.assistant .cmsg-inner{background:var(--sf2);border:1px solid var(--bd);border-radius:14px 14px 14px 4px;padding:12px 16px}
+.cmsg.system{align-self:center;font-size:11px;color:var(--tx3);padding:4px 12px;font-style:italic}
+
+.cmsg-time{font-size:10px;color:var(--tx3);margin-top:4px;padding:0 4px}
+.cmsg.user .cmsg-time{text-align:right;color:rgba(0,0,0,.4)}
+
+/* Rich content inside messages */
+.cmsg-inner h4{font-size:13px;font-weight:600;margin:8px 0 4px;color:var(--amber)}
+.cmsg-inner h4:first-child{margin-top:0}
+.cmsg-inner p{margin:2px 0}
+.cmsg-inner strong{font-weight:700}
+.cmsg-inner code{background:rgba(255,255,255,.08);padding:1px 5px;border-radius:4px;font-size:12px;font-family:'SF Mono','Fira Code',monospace}
+.cmsg-inner pre{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:10px 12px;margin:8px 0;overflow-x:auto;font-size:12px;font-family:'SF Mono','Fira Code',monospace;line-height:1.5}
+.cmsg-inner ul,.cmsg-inner ol{padding-left:20px;margin:4px 0}
+.cmsg-inner li{margin:2px 0}
+
+/* Color tags */
+.tag-s{color:var(--green);font-weight:600}       /* success */
+.tag-e{color:var(--red);font-weight:600}          /* error */
+.tag-i{color:var(--blue);font-weight:600}         /* info */
+.tag-w{color:var(--amber);font-weight:600}        /* warning */
+.tag-a{color:var(--amber);font-weight:600}        /* action */
+
+/* Filmstrip — inline scene thumbnails */
+.filmstrip{display:flex;gap:4px;margin:8px 0;overflow-x:auto;padding:2px 0;scrollbar-width:none}
+.filmstrip::-webkit-scrollbar{display:none}
+.film{flex-shrink:0;width:80px;border-radius:6px;overflow:hidden;border:1px solid var(--bd);cursor:pointer;transition:all .15s;position:relative}
+.film:hover{border-color:var(--amber);transform:scale(1.05)}
+.film img{width:80px;height:45px;object-fit:cover;display:block;background:var(--sf2)}
+.film .score{position:absolute;bottom:2px;right:2px;font-size:9px;font-weight:700;color:var(--amber);background:rgba(0,0,0,.7);padding:1px 4px;border-radius:3px}
+.film .time{position:absolute;top:2px;left:2px;font-size:8px;color:var(--tx);background:rgba(0,0,0,.7);padding:1px 4px;border-radius:3px}
+
+/* Scene cards — larger inline */
+.scene-card{display:flex;gap:12px;background:var(--sf);border:1px solid var(--bd);border-radius:8px;padding:10px;margin:6px 0;cursor:pointer;transition:all .15s}
+.scene-card:hover{border-color:var(--amber)}
+.scene-card img{width:120px;height:68px;object-fit:cover;border-radius:4px;background:var(--sf2);flex-shrink:0}
+.scene-card .info{flex:1;min-width:0}
+.scene-card .info .sc-score{font-size:18px;font-weight:700;color:var(--amber)}
+.scene-card .info .sc-time{font-size:11px;color:var(--tx2);margin-top:2px}
+
+/* Output cards */
+.output-card{display:flex;align-items:center;gap:10px;background:var(--sf);border:1px solid var(--bd);border-radius:8px;padding:10px 12px;margin:6px 0}
+.output-card .oc-icon{font-size:24px;flex-shrink:0}
+.output-card .oc-info{flex:1;min-width:0}
+.output-card .oc-name{font-size:13px;font-weight:600}
+.output-card .oc-meta{font-size:11px;color:var(--tx2)}
+
+/* Progress in chat */
+.chat-progress{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:10px 12px;margin:6px 0}
+.chat-progress .cp-bar{height:6px;background:var(--sf2);border-radius:3px;overflow:hidden;margin-top:6px}
+.chat-progress .cp-fill{height:100%;background:linear-gradient(90deg,var(--amber),var(--green));border-radius:3px;transition:width 1s}
+.chat-progress .cp-label{font-size:12px;color:var(--tx2);display:flex;justify-content:space-between}
+
+/* Typing indicator */
+.typing{display:flex;align-items:center;gap:4px;padding:4px 0}
+.typing span{width:6px;height:6px;border-radius:50%;background:var(--tx3);animation:bounce 1.4s infinite}
+.typing span:nth-child(2){animation-delay:.2s}
+.typing span:nth-child(3){animation-delay:.4s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+
+/* Chat input */
+.chat-input-wrap{padding:12px;border-top:1px solid var(--bd);flex-shrink:0;display:flex;gap:8px;align-items:flex-end}
+.chat-input{flex:1;padding:10px 14px;background:var(--sf2);border:1px solid var(--bd);border-radius:12px;color:var(--tx);font-size:13px;outline:none;resize:none;max-height:120px;min-height:40px;line-height:1.4;font-family:inherit;transition:border .15s}
+.chat-input:focus{border-color:var(--amber)}.chat-input::placeholder{color:var(--tx3)}
+.chat-send{width:40px;height:40px;border-radius:10px;background:var(--amber);border:none;color:#0a0a0a;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.chat-send:hover{background:#d97706;transform:scale(1.05)}
+.chat-send:active{transform:scale(.95)}
+
+/* Chat toggle FAB */
+.chat-fab{position:fixed;bottom:24px;right:24px;z-index:35;width:52px;height:52px;border-radius:50%;background:var(--amber);border:none;color:#0a0a0a;font-size:22px;cursor:pointer;box-shadow:0 4px 20px rgba(245,158,11,.3);display:flex;align-items:center;justify-content:center;transition:all .3s}
+.chat-fab:hover{transform:scale(1.1);box-shadow:0 4px 28px rgba(245,158,11,.5)}
+.chat-fab.hidden{transform:scale(0);pointer-events:none}
+.chat-badge{position:absolute;top:-2px;right:-2px;width:18px;height:18px;border-radius:50%;background:var(--red);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;display:none}
+
+/* ── Search ── */
 .sbar{display:flex;align-items:center;gap:10px;margin-bottom:20px}
 .siw{flex:1;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.04);border:1px solid var(--bd);border-radius:var(--rs);padding:0 12px}
 .siw svg{color:var(--tx3);flex-shrink:0}
 .siw input{flex:1;padding:9px 0;background:none;border:none;color:var(--tx);font-size:13px;outline:none}
 .siw input::placeholder{color:var(--tx3)}
 
-/* Recipes */
+/* ── Recipes ── */
 .rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
 .rc{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:20px;transition:all .2s}
 .rc:hover{border-color:var(--bd2);transform:translateY(-2px)}
-.rc .re{font-size:28px;margin-bottom:10px}
-.rc .rn{font-size:15px;font-weight:600;margin-bottom:4px}
-.rc .rd{font-size:12px;color:var(--tx2);line-height:1.4}
 
-/* Scenes */
+/* ── Scenes ── */
 .sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
 .sc{background:var(--sf);border:1px solid var(--bd);border-radius:var(--rs);overflow:hidden;transition:all .15s}
 .sc:hover{border-color:var(--amber)}
 .sc img{width:100%;aspect-ratio:16/9;object-fit:cover;background:var(--sf2)}
-.sc .si{padding:8px 10px}
-.sc .sv{font-size:16px;font-weight:700;color:var(--amber)}
-.sc .stm{font-size:10px;color:var(--tx2)}
 
-/* Empty */
-.emp{text-align:center;padding:60px 20px}
-.emp-i{font-size:40px;margin-bottom:12px}
-.emp h3{font-size:16px;margin-bottom:6px}
-.emp p{font-size:13px;color:var(--tx2)}
+/* ── Empty ── */
+.emp{text-align:center;padding:60px 20px}.emp-i{font-size:40px;margin-bottom:12px}.emp h3{font-size:16px;margin-bottom:6px}.emp p{font-size:13px;color:var(--tx2)}
 
-/* Toast */
+/* ── Toast ── */
 .toast-c{position:fixed;bottom:20px;right:20px;z-index:200;display:flex;flex-direction:column;gap:8px}
 .toast{padding:12px 18px;background:var(--sf);border:1px solid var(--bd);border-radius:10px;font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.4);animation:su .3s ease}
 @keyframes su{from{transform:translateY(20px);opacity:0}}
 
-/* Config banner */
-.cbanner{background:var(--amber-g);border:1px solid rgba(245,158,11,.2);border-radius:var(--r);padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;gap:12px;font-size:13px}
+/* ── Config ── */
+.cbanner{background:var(--ag);border:1px solid rgba(245,158,11,.2);border-radius:var(--r);padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;gap:12px;font-size:13px}
 .cbanner input{flex:1;padding:6px 12px;background:var(--sf2);border:1px solid var(--bd);border-radius:6px;color:var(--tx);font-size:13px;outline:none}
-.cbanner input:focus{border-color:var(--amber)}
 
-/* Mobile */
-.mt{display:none;position:fixed;top:12px;left:12px;z-index:50;width:40px;height:40px;border-radius:10px;background:var(--sf);border:1px solid var(--bd);align-items:center;justify-content:center;cursor:pointer;color:var(--tx)}
-@media(max-width:768px){.side{transform:translateX(-100%)}.side.open{transform:translateX(0)}.mw{margin-left:0!important}.mw.co{margin-right:0!important}.mt{display:flex}.stats{grid-template-columns:repeat(2,1fr)}.pgrid{grid-template-columns:1fr}}
+/* ── Mobile ── */
+.mt{display:none;position:fixed;top:12px;left:12px;z-index:50;width:40px;height:40px;border-radius:10px;background:var(--sf);border:1px solid var(--bd);align-items:center;justify-content:center;cursor:pointer;color:var(--tx);font-size:18px}
+@media(max-width:768px){
+  .side{transform:translateX(-100%)}.side.open{transform:translateX(0)}
+  .mw{margin-left:0!important}
+  .chat-panel{width:100%;z-index:50}
+  .mt{display:flex}
+  .stats{grid-template-columns:repeat(2,1fr)}.pgrid{grid-template-columns:1fr}
+}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-@keyframes spin{to{transform:rotate(360deg)}}
-.spin{animation:spin 1s linear inline-block}
-.typing span{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--tx2);margin:0 2px;animation:pulse 1s infinite}
-.typing span:nth-child(2){animation-delay:.2s}
-.typing span:nth-child(3){animation-delay:.4s}
+@keyframes spin{to{transform:rotate(360deg)}}.spin{animation:spin 1s linear inline-block}
 </style>
 </head>
 <body>
 <button class="mt" onclick="document.querySelector('.side').classList.toggle('open')">☰</button>
 <div class="app">
-<!-- Sidebar -->
+<!-- ─── Sidebar ─── -->
 <aside class="side" id="sidebar">
   <div class="side-brand"><div class="side-logo">🎬</div><span class="side-title">FFWD Media</span></div>
   <nav>
     <div class="nav-sec">Main</div>
     <button class="ni active" data-page="dashboard" onclick="nav('dashboard')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Dashboard</button>
     <button class="ni" data-page="projects" onclick="nav('projects')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>Projects<span class="bc" id="npc">0</span></button>
-    <button class="ni" data-page="jobs" onclick="nav('jobs')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4z"/></svg>Jobs<span class="bc" id="njc" style="display:none">0</span></button>
+    <button class="ni" data-page="jobs" onclick="nav('jobs')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4z"/></svg>Jobs</button>
     <div class="nav-sec">Create</div>
     <button class="ni" data-page="new-project" onclick="nav('new-project')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>New Project</button>
-    <button class="ni" data-page="recipes" onclick="nav('recipes')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"/></svg>Recipes</button>
+    <button class="ni" data-page="recipes" onclick="nav('recipes')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3z"/></svg>Recipes</button>
   </nav>
   <div class="side-foot">
-    <div class="api-st" onclick="showApiConfig()">
+    <div class="api-st" onclick="toggleApiConfig()">
       <div class="dot load" id="adot"></div>
       <span id="astatus">Connecting…</span>
     </div>
   </div>
 </aside>
 
-<!-- Main -->
+<!-- ─── Main ─── -->
 <div class="mw" id="mw">
   <div class="main">
-    <!-- API Config -->
     <div class="cbanner" id="cbanner" style="display:none">
-      <span>🔗 API URL:</span>
+      <span>🔗</span><span>API URL:</span>
       <input id="apiInput" placeholder="http://localhost:3001">
       <button class="btn btn-p btn-s" onclick="setApiUrl()">Connect</button>
     </div>
@@ -262,28 +327,32 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
   </div>
 </div>
 
-<!-- Chat Panel -->
-<div class="cpan" id="chatpan">
-  <div class="ch">
-    <h3><div class="dot on"></div>Agent Chat</h3>
-    <button class="btn btn-g btn-s" onclick="toggleChat()">✕</button>
+<!-- ─── Rich Chat Panel ─── -->
+<div class="chat-panel" id="chatpan">
+  <div class="chat-hdr">
+    <h3><div class="live"></div>Agent Chat</h3>
+    <div style="display:flex;gap:6px">
+      <button class="btn btn-g btn-s" onclick="clearChat()" title="Clear chat">🗑</button>
+      <button class="btn btn-g btn-s" onclick="toggleChat()">✕</button>
+    </div>
   </div>
-  <div class="cm" id="cmsgs"></div>
-  <div class="ciw">
-    <textarea class="ci" id="cinput" placeholder="Ask the agent anything about your projects…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}"></textarea>
-    <button class="btn btn-p btn-s" onclick="sendChat()" style="align-self:flex-end">➤</button>
+  <div class="chat-msgs" id="chatMsgs"></div>
+  <div class="chat-input-wrap">
+    <textarea class="chat-input" id="chatInput" placeholder="Talk to the agent — ask about projects, run pipelines, analyze scenes…" onkeydown="handleChatKey(event)"></textarea>
+    <button class="chat-send" onclick="sendChat()">➤</button>
   </div>
 </div>
 
-<!-- Chat toggle (in sidebar) -->
-<div id="chatToggle" style="position:fixed;bottom:20px;right:20px;z-index:35">
-  <button class="btn" onclick="toggleChat()" style="border-radius:50%;width:48px;height:48px;font-size:20px;box-shadow:0 4px 16px rgba(0,0,0,.4)">💬</button>
-</div>
+<button class="chat-fab" id="chatFab" onclick="toggleChat()">
+  💬<div class="chat-badge" id="chatBadge">0</div>
+</button>
 
 <div class="toast-c" id="toasts"></div>
 
 <script>
-// ── API ──
+// ═══════════════════════════════════════════════════════════════════
+// API Layer
+// ═══════════════════════════════════════════════════════════════════
 let API = localStorage.getItem('vk_api_url') || '';
 function getApiUrl() {
   const p = new URLSearchParams(location.search);
@@ -301,10 +370,14 @@ async function api(path, opts = {}) {
   } catch (e) { console.error('API:', e); return null; }
 }
 
-// ── State ──
-let projects = [], jobs = [], recipes = [], chatMsgs = [];
+// ═══════════════════════════════════════════════════════════════════
+// State
+// ═══════════════════════════════════════════════════════════════════
+let projects = [], jobs = [], recipes = [], chatMsgs = [], chatOpen = false;
 
-// ── Navigation ──
+// ═══════════════════════════════════════════════════════════════════
+// Navigation
+// ═══════════════════════════════════════════════════════════════════
 function nav(page) {
   document.querySelectorAll('.ni').forEach(n => n.classList.toggle('active', n.dataset.page === page));
   document.querySelectorAll('.pg').forEach(p => p.classList.remove('act'));
@@ -312,13 +385,14 @@ function nav(page) {
   if (el) el.classList.add('act');
   document.querySelector('.side').classList.remove('open');
   if (page === 'dashboard') loadDashboard();
-  if (page === 'projects') loadProjects();
-  if (page === 'jobs') loadJobs();
-  if (page === 'new-project') loadRecipes();
-  if (page === 'recipes') loadRecipes();
+  else if (page === 'projects') loadProjects();
+  else if (page === 'jobs') loadJobs();
+  else if (page === 'new-project' || page === 'recipes') loadRecipes();
 }
 
-// ── Toast ──
+// ═══════════════════════════════════════════════════════════════════
+// Toast
+// ═══════════════════════════════════════════════════════════════════
 function toast(msg) {
   const c = document.getElementById('toasts');
   const d = document.createElement('div');
@@ -326,7 +400,9 @@ function toast(msg) {
   setTimeout(() => d.remove(), 3000);
 }
 
-// ── API Status ──
+// ═══════════════════════════════════════════════════════════════════
+// API Status
+// ═══════════════════════════════════════════════════════════════════
 async function checkApi() {
   const dot = document.getElementById('adot');
   const st = document.getElementById('astatus');
@@ -340,8 +416,7 @@ async function checkApi() {
     if (!getApiUrl()) document.getElementById('cbanner').style.display = 'flex';
   }
 }
-
-function showApiConfig() {
+function toggleApiConfig() {
   const b = document.getElementById('cbanner');
   b.style.display = b.style.display === 'none' ? 'flex' : 'none';
   if (b.style.display === 'flex') document.getElementById('apiInput').value = getApiUrl();
@@ -349,59 +424,213 @@ function showApiConfig() {
 function setApiUrl() {
   const v = document.getElementById('apiInput').value.replace(/\/+$/, '');
   if (v) { API = v; localStorage.setItem('vk_api_url', v); }
-  checkApi();
+  document.getElementById('cbanner').style.display = 'none';
+  checkApi(); connectChat();
 }
 
-// ── Chat ──
+// ═══════════════════════════════════════════════════════════════════
+// Rich Chat — Rendering Engine
+// ═══════════════════════════════════════════════════════════════════
 function toggleChat() {
   const p = document.getElementById('chatpan');
-  const m = document.getElementById('mw');
-  const t = document.getElementById('chatToggle');
-  p.classList.toggle('open'); m.classList.toggle('co');
-  t.style.display = p.classList.contains('open') ? 'none' : 'block';
+  const f = document.getElementById('chatFab');
+  chatOpen = !chatOpen;
+  p.classList.toggle('open', chatOpen);
+  f.classList.toggle('hidden', chatOpen);
+  if (chatOpen && !chatMsgs.length) loadChatHistory();
+  if (chatOpen) scrollChat();
 }
-async function sendChat() {
-  const inp = document.getElementById('cinput');
-  const msg = inp.value.trim(); if (!msg) return;
-  inp.value = '';
-  chatMsgs.push({ role: 'user', text: msg, time: new Date() });
-  renderChat();
-  // Show typing
-  chatMsgs.push({ role: 'typing' });
-  renderChat();
-  try {
-    const r = await api('/api/tools/video_kitchen_agent_chat', {
-      method: 'POST', body: JSON.stringify({ message: msg })
-    });
-    chatMsgs.pop(); // remove typing
-    if (r && r.result) {
-      chatMsgs.push({ role: 'assistant', text: r.result, time: new Date() });
-    } else {
-      chatMsgs.push({ role: 'assistant', text: 'I received your message. Pipeline commands are available via the Projects and Jobs pages. Try: "Run pipeline on project X" or "Show me scene scores for taxi test".', time: new Date() });
-    }
-  } catch (e) {
-    chatMsgs.pop();
-    chatMsgs.push({ role: 'assistant', text: 'Could not reach the agent. Make sure the backend is running.', time: new Date() });
-  }
-  renderChat();
-}
-function renderChat() {
-  const c = document.getElementById('cmsgs');
-  c.innerHTML = chatMsgs.map(m => {
-    if (m.role === 'typing') return '<div class="cmsg a"><div class="typing"><span></span><span></span><span></span></div></div>';
-    const cls = m.role === 'user' ? 'u' : m.role === 'system' ? 's' : 'a';
-    const t = m.time ? `<div class="mt">${m.time.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</div>` : '';
-    return `<div class="cmsg ${cls}">${escHtml(m.text)}${t}</div>`;
-  }).join('');
-  c.scrollTop = c.scrollHeight;
-}
-function escHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
-// ── Dashboard ──
+function connectChat() {
+  const base = getApiUrl();
+  if (!base) return;
+  // SSE for live updates
+  const es = new EventSource(base + '/api/chat/stream');
+  es.onmessage = (e) => {
+    try {
+      const msg = JSON.parse(e.data);
+      if (msg.type === 'cleared') { chatMsgs = []; renderChat(); return; }
+      if (!chatMsgs.find(m => m.id === msg.id)) {
+        chatMsgs.push(msg);
+        renderChat();
+        if (!chatOpen) {
+          document.getElementById('chatBadge').style.display = 'flex';
+          document.getElementById('chatBadge').textContent = chatMsgs.filter(m => !m._seen).length;
+        }
+      }
+    } catch (err) {}
+  };
+  es.onerror = () => { setTimeout(() => es.close(), 1000); };
+}
+
+function loadChatHistory() {
+  api('/api/chat').then(msgs => {
+    if (msgs && msgs.length) { chatMsgs = msgs; renderChat(); }
+    else {
+      // Welcome message
+      chatMsgs.push({ id: 'sys-1', role: 'system', content: 'Connected to Video Kitchen agent. Ask me anything — run pipelines, check scenes, analyze outputs.', format: 'text', created_at: new Date().toISOString() });
+      renderChat();
+    }
+  });
+}
+
+function handleChatKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
+}
+
+async function sendChat() {
+  const inp = document.getElementById('chatInput');
+  const msg = inp.value.trim();
+  if (!msg) return;
+  inp.value = '';
+  // Optimistic add
+  const tempId = 'temp-' + Date.now();
+  const userMsg = { id: tempId, role: 'user', content: msg, format: 'text', created_at: new Date().toISOString() };
+  chatMsgs.push(userMsg);
+  renderChat();
+  // Send to backend
+  await api('/api/chat', { method: 'POST', body: JSON.stringify({ role: 'user', content: msg, format: 'text' }) });
+  // Show typing
+  chatMsgs.push({ id: 'typing', role: 'typing' });
+  renderChat();
+}
+
+async function clearChat() {
+  if (!confirm('Clear all messages?')) return;
+  chatMsgs = [];
+  await api('/api/chat', { method: 'DELETE' });
+  renderChat();
+}
+
+function renderChat() {
+  const c = document.getElementById('chatMsgs');
+  c.innerHTML = chatMsgs.map(m => renderMessage(m)).join('');
+  scrollChat();
+}
+
+function renderMessage(m) {
+  if (m.role === 'typing') {
+    return '<div class="cmsg assistant"><div class="cmsg-inner"><div class="typing"><span></span><span></span><span></span></div></div></div>';
+  }
+  if (m.role === 'system') {
+    return `<div class="cmsg system">${esc(m.content)}</div>`;
+  }
+
+  const role = m.role === 'user' ? 'user' : 'assistant';
+  const fmt = m.format || 'text';
+  let inner = '';
+
+  if (fmt === 'rich' && m.metadata) {
+    try {
+      const meta = typeof m.metadata === 'string' ? JSON.parse(m.metadata) : m.metadata;
+      inner = renderRichContent(meta);
+    } catch { inner = esc(m.content); }
+  } else if (fmt === 'markdown') {
+    inner = renderMarkdown(m.content);
+  } else {
+    inner = renderMarkdown(m.content);
+  }
+
+  const time = m.created_at ? new Date(m.created_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '';
+  return `<div class="cmsg ${role}"><div class="cmsg-inner">${inner}</div><div class="cmsg-time">${time}</div></div>`;
+}
+
+// ── Rich Content Renderer ──
+function renderRichContent(meta) {
+  let html = '';
+  if (meta.text) html += renderMarkdown(meta.text);
+  if (meta.scenes) html += renderFilmstrip(meta.scenes);
+  if (meta.scene_card) html += renderSceneCard(meta.scene_card);
+  if (meta.output) html += renderOutputCard(meta.output);
+  if (meta.progress) html += renderChatProgress(meta.progress);
+  if (meta.pipeline) html += renderPipelineStatus(meta.pipeline);
+  return html;
+}
+
+function renderFilmstrip(scenes) {
+  const base = getApiUrl();
+  return '<div class="filmstrip">' + scenes.map(s =>
+    `<div class="film" title="${esc(s.title || '')}">
+      <img src="${base}/api/projects/${s.project_id || ''}/gallery?thumb=${encodeURIComponent(s.thumbnail || '')}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2245%22><rect fill=%22%23161616%22 width=%2280%22 height=%2245%22/><text x=%2240%22 y=%2227%22 text-anchor=%22middle%22 fill=%22%2352525b%22 font-size=%2212%22>📷</text></svg>'">
+      <div class="score">${(s.score || 0).toFixed(1)}</div>
+      <div class="time">${fmtTime(s.start)}</div>
+    </div>`
+  ).join('') + '</div>';
+}
+
+function renderSceneCard(s) {
+  return `<div class="scene-card">
+    <img src="${esc(s.thumbnail || '')}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%2268%22><rect fill=%22%23161616%22 width=%22120%22 height=%2268%22/><text x=%2260%22 y=%2240%22 text-anchor=%22middle%22 fill=%22%2352525b%22 font-size=%2220%22>🎬</text></svg>'">
+    <div class="info"><div class="sc-score">${(s.score || 0).toFixed(1)}</div><div class="sc-time">${fmtTime(s.start)} → ${fmtTime(s.end)}</div>${s.title ? `<div style="font-size:12px;margin-top:4px">${esc(s.title)}</div>` : ''}</div>
+  </div>`;
+}
+
+function renderOutputCard(o) {
+  return `<div class="output-card">
+    <div class="oc-icon">🎥</div>
+    <div class="oc-info"><div class="oc-name">${esc(o.filename || o.name || 'output')}</div><div class="oc-meta">${o.duration || ''} · ${o.size || ''}</div></div>
+    <button class="btn btn-p btn-s" onclick="dlOutput('${esc(o.id || '')}')">⬇</button>
+  </div>`;
+}
+
+function renderChatProgress(p) {
+  return `<div class="chat-progress"><div class="cp-label"><span>${esc(p.label || 'Processing…')}</span><span>${Math.round(p.percent || 0)}%</span></div><div class="cp-bar"><div class="cp-fill" style="width:${p.percent || 0}%"></div></div></div>`;
+}
+
+function renderPipelineStatus(p) {
+  const steps = ['upload','prep','analyze','plate','season','qc','done'];
+  const labels = ['📤 Upload','🔪 Prep','🧠 Analyze','🍽️ Plate','🎵 Season','✅ QC','🎉 Done'];
+  let html = '<div style="display:flex;gap:4px;flex-wrap:wrap;margin:6px 0">';
+  steps.forEach((s, i) => {
+    const current = p.current === s;
+    const done = steps.indexOf(p.current || '') > i;
+    const cls = done ? 'dn' : current ? '' : '';
+    html += `<span class="ps ${cls}" style="font-size:10px;padding:3px 8px;border-radius:4px;${current ? 'background:var(--ag);border:1px solid rgba(245,158,11,.3);color:var(--amber)' : done ? 'background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.3);color:var(--green)' : ''}">${labels[i]}</span>`;
+  });
+  return html + '</div>';
+}
+
+// ── Simple Markdown Renderer ──
+function renderMarkdown(text) {
+  if (!text) return '';
+  let h = esc(text);
+  // Bold
+  h = h.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  // Inline code
+  h = h.replace(/`([^`]+)`/g, '<code>$1</code>');
+  // Headers
+  h = h.replace(/^#### (.+)$/gm, '<h4>$1</h4>');
+  h = h.replace(/^### (.+)$/gm, '<h4>$1</h4>');
+  h = h.replace(/^## (.+)$/gm, '<h4>$1</h4>');
+  // Color tags: [success:text], [error:text], [info:text], [warn:text], [action:text]
+  h = h.replace(/\[success:(.+?)\]/g, '<span class="tag-s">$1</span>');
+  h = h.replace(/\[error:(.+?)\]/g, '<span class="tag-e">$1</span>');
+  h = h.replace(/\[info:(.+?)\]/g, '<span class="tag-i">$1</span>');
+  h = h.replace(/\[warn:(.+?)\]/g, '<span class="tag-w">$1</span>');
+  h = h.replace(/\[action:(.+?)\]/g, '<span class="tag-a">$1</span>');
+  // Lists
+  h = h.replace(/^- (.+)$/gm, '<li>$1</li>');
+  h = h.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+  // Line breaks
+  h = h.replace(/\n/g, '<br>');
+  // Clean up empty lists
+  h = h.replace(/<ul><\/ul>/g, '');
+  h = h.replace(/<br><br>/g, '</p><p>');
+  return h;
+}
+
+function scrollChat() {
+  const c = document.getElementById('chatMsgs');
+  requestAnimationFrame(() => c.scrollTop = c.scrollHeight);
+}
+function esc(s) { if (!s) return ''; const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function fmtTime(s) { if (!s && s !== 0) return '—'; const m = Math.floor(s/60), sec = Math.floor(s%60); return `${m}:${String(sec).padStart(2,'0')}`; }
+
+// ═══════════════════════════════════════════════════════════════════
+// Dashboard
+// ═══════════════════════════════════════════════════════════════════
 async function loadDashboard() {
-  const [p, j, o, r] = await Promise.all([
-    api('/api/projects'), api('/api/jobs'), api('/api/outputs'), api('/api/recipes')
-  ]);
+  const [p, j, o, r] = await Promise.all([api('/api/projects'), api('/api/jobs'), api('/api/outputs'), api('/api/recipes')]);
   projects = p || []; jobs = j || []; recipes = r || [];
   const outputs = o || [];
   document.getElementById('s-p').textContent = projects.length;
@@ -409,26 +638,15 @@ async function loadDashboard() {
   document.getElementById('s-o').textContent = outputs.length;
   document.getElementById('s-r').textContent = recipes.length;
   document.getElementById('npc').textContent = projects.length;
-  const active = jobs.filter(j => j.status === 'running' || j.status === 'queued').length;
-  const njc = document.getElementById('njc');
-  njc.textContent = active; njc.style.display = active > 0 ? 'inline' : 'none';
-  // Jobs table
   const tb = document.getElementById('jtb');
   if (!jobs.length) { tb.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--tx2)">No jobs yet</td></tr>'; return; }
-  tb.innerHTML = jobs.slice(0, 15).map(j => `<tr>
-    <td style="font-family:monospace;font-size:12px">${j.id.slice(0,8)}</td>
-    <td>${escHtml(j.project_id || '')}</td>
-    <td>${j.type || ''}</td>
-    <td><span class="sb sb-${j.status}">${j.status}</span></td>
-    <td style="color:var(--tx2);font-size:12px">${j.created_at ? new Date(j.created_at).toLocaleString() : ''}</td>
-  </tr>`).join('');
+  tb.innerHTML = jobs.slice(0, 15).map(j => `<tr><td style="font-family:monospace;font-size:12px">${j.id.slice(0,8)}</td><td>${esc(j.project_id||'')}</td><td>${j.type||''}</td><td><span class="sb sb-${j.status}">${j.status}</span></td><td style="color:var(--tx2);font-size:12px">${j.created_at ? new Date(j.created_at).toLocaleString() : ''}</td></tr>`).join('');
 }
 
-// ── Projects ──
-async function loadProjects() {
-  projects = (await api('/api/projects')) || [];
-  renderProjects();
-}
+// ═══════════════════════════════════════════════════════════════════
+// Projects
+// ═══════════════════════════════════════════════════════════════════
+async function loadProjects() { projects = (await api('/api/projects')) || []; renderProjects(); }
 function renderProjects() {
   const q = (document.getElementById('psearch')?.value || '').toLowerCase();
   const filtered = projects.filter(p => !q || (p.title || p.id).toLowerCase().includes(q));
@@ -437,95 +655,61 @@ function renderProjects() {
   c.innerHTML = filtered.map(p => {
     const stages = ['uploaded','prepped','analyzed','plated','seasoned','done','completed'];
     const si = stages.indexOf(p.status);
-    const pipeHtml = ['Upload','Prep','Analyze','Plate','Season','Done'].map((s, i) => {
-      const cls = si >= i ? 'dn' : '';
-      const cr = (si >= i && (i === si || (i < si && p.status === stages[si]))) ? ' cr' : '';
-      return `<span class="ps${cls}${cr}">${s}</span>${i < 5 ? '<span class="ar">→</span>' : ''}`;
-    }).join('');
+    const pipeH = ['Upload','Prep','Analyze','Plate','Season','Done'].map((s, i) =>
+      `<span class="ps${si >= i ? ' dn' : ''}">${s}</span>${i < 5 ? '<span class="ar">→</span>' : ''}`).join('');
     return `<div class="pc" onclick="showDetail('${p.id}')">
       <div class="pc-thumb"><span>🎬</span><div class="ov"></div><span class="sb sb-${p.status}">${p.status}</span></div>
-      <div class="pc-info"><h3>${escHtml(p.title || p.id)}</h3><div class="meta">
-        <span>📷 ${p.scene_count || 0} scenes</span><span>📖 ${p.recipe_id || 'none'}</span>
-        <span>🕐 ${p.created_at ? new Date(p.created_at).toLocaleDateString() : ''}</span>
-      </div></div>
-      <div class="pipe">${pipeHtml}</div>
+      <div class="pc-info"><h3>${esc(p.title || p.id)}</h3><div class="meta"><span>📷 ${p.scene_count||0} scenes</span><span>📖 ${p.recipe_id||'none'}</span></div></div>
+      <div class="pipe">${pipeH}</div>
       <div class="pc-act" onclick="event.stopPropagation()">
         <button class="btn btn-p btn-s" onclick="runPipeline('${p.id}')">▶ Run</button>
         <button class="btn btn-d btn-s" onclick="delProject('${p.id}')">🗑</button>
-      </div>
-    </div>`;
+      </div></div>`;
   }).join('');
 }
 
-// ── Detail ──
 async function showDetail(id) {
   nav('detail');
   const p = await api('/api/projects/' + id);
-  if (!p || !p.project) { document.getElementById('detail-content').innerHTML = '<div class="emp"><h3>Project not found</h3></div>'; return; }
+  if (!p || !p.project) { document.getElementById('detail-content').innerHTML = '<div class="emp"><h3>Not found</h3></div>'; return; }
   const pr = p.project, sc = p.scenes || [], out = p.outputs || [], jb = p.jobs || [];
-  let html = `<div class="ph"><div class="tag">${escHtml(pr.recipe_id || 'Project')}</div><h1>${escHtml(pr.title || pr.id)}</h1><p>${escHtml(pr.source || '')}</p></div>`;
-
-  // Scenes
-  if (sc.length) {
-    html += `<h2 style="font-size:16px;margin-bottom:12px">📷 Scenes (${sc.length})</h2><div class="sgrid">`;
-    sc.forEach(s => {
-      html += `<div class="sc"><img src="${s.thumbnail || ''}" onerror="this.style.display='none'"><div class="si"><div class="sv">${(s.visual_score || 0).toFixed(1)}</div><div class="stm">${fmtTime(s.start_time)} → ${fmtTime(s.end_time)}</div></div></div>`;
-    });
-    html += '</div>';
-  }
-
-  // Outputs
-  if (out.length) {
-    html += `<h2 style="font-size:16px;margin:24px 0 12px">📦 Outputs (${out.length})</h2><div class="sgrid">`;
-    out.forEach(o => {
-      html += `<div class="pc"><div class="pc-thumb"><span>🎥</span></div><div class="pc-info"><h3>${escHtml(o.filename || o.id)}</h3><div class="meta"><span>${o.file_size || ''}</span></div></div>
-      <div class="pc-act"><button class="btn btn-p btn-s" onclick="dlOutput('${o.id}')">⬇ Download</button></div></div>`;
-    });
-    html += '</div>';
-  }
-
-  // Job history
-  if (jb.length) {
-    html += `<h2 style="font-size:16px;margin:24px 0 12px">📋 Job History</h2>`;
-    jb.forEach(j => {
-      html += `<div class="jc"><div class="jh"><span class="jid">${j.id.slice(0,8)}</span><span class="sb sb-${j.status}">${j.status}</span></div>
-      <div class="pbar"><div class="pfill" style="width:${j.progress || (j.status === 'done' ? 100 : j.status === 'running' ? 50 : 0)}%"></div></div></div>`;
-    });
-  }
-
+  let html = `<div class="ph"><div class="tag">${esc(pr.recipe_id||'')}</div><h1>${esc(pr.title||pr.id)}</h1><p>${esc(pr.source||'')}</p></div>`;
+  if (sc.length) { html += `<h2 style="font-size:16px;margin-bottom:12px">📷 Scenes (${sc.length})</h2><div class="sgrid">${sc.map(s => `<div class="sc"><img src="${s.thumbnail||''}" onerror="this.style.display='none'"><div style="padding:8px 10px"><div style="font-size:16px;font-weight:700;color:var(--amber)">${(s.visual_score||0).toFixed(1)}</div><div style="font-size:10px;color:var(--tx2)">${fmtTime(s.start_time)} → ${fmtTime(s.end_time)}</div></div></div>`).join('')}</div>`; }
+  if (out.length) { html += `<h2 style="font-size:16px;margin:24px 0 12px">📦 Outputs (${out.length})</h2><div class="sgrid">${out.map(o => `<div class="pc"><div class="pc-thumb"><span>🎥</span></div><div class="pc-info"><h3>${esc(o.filename||o.id)}</h3></div><div class="pc-act"><button class="btn btn-p btn-s" onclick="dlOutput('${o.id}')">⬇ Download</button></div></div>`).join('')}</div>`; }
+  if (jb.length) { html += `<h2 style="font-size:16px;margin:24px 0 12px">📋 Jobs</h2>${jb.map(j => `<div class="jc"><div class="jh"><span class="jid">${j.id.slice(0,8)}</span><span class="sb sb-${j.status}">${j.status}</span></div><div class="pbar"><div class="pfill" style="width:${j.status==='done'?100:j.status==='running'?50:0}%"></div></div></div>`).join('')}`; }
   document.getElementById('detail-content').innerHTML = html;
 }
 
-function fmtTime(s) { if (!s && s !== 0) return '—'; const m = Math.floor(s/60), sec = Math.floor(s%60); return `${m}:${String(sec).padStart(2,'0')}`; }
-
-// ── Jobs ──
+// ═══════════════════════════════════════════════════════════════════
+// Jobs
+// ═══════════════════════════════════════════════════════════════════
 async function loadJobs() {
   jobs = (await api('/api/jobs')) || [];
   const c = document.getElementById('jlist');
-  if (!jobs.length) { c.innerHTML = '<div class="emp"><div class="emp-i">📋</div><h3>No jobs yet</h3><p>Run a pipeline to see jobs here.</p></div>'; return; }
+  if (!jobs.length) { c.innerHTML = '<div class="emp"><div class="emp-i">📋</div><h3>No jobs yet</h3></div>'; return; }
   c.innerHTML = jobs.map(j => {
-    const pw = j.status === 'done' ? 100 : j.status === 'running' ? (j.progress || 50) : j.status === 'failed' ? 100 : 0;
-    return `<div class="jc"><div class="jh"><span class="jid">${j.id} · ${j.type}</span><span class="sb sb-${j.status}">${j.status}</span></div>
-    <div class="pbar"><div class="pfill" style="width:${pw}%"></div></div>
-    <div style="margin-top:8px;font-size:12px;color:var(--tx2)">${j.project_id || ''} · ${j.created_at ? new Date(j.created_at).toLocaleString() : ''}</div>
-    ${j.error ? `<div style="margin-top:6px;font-size:12px;color:var(--red)">${escHtml(j.error)}</div>` : ''}</div>`;
+    const pw = j.status==='done'?100:j.status==='running'?(j.progress||50):j.status==='failed'?100:0;
+    return `<div class="jc"><div class="jh"><span class="jid">${j.id} · ${j.type}</span><span class="sb sb-${j.status}">${j.status}</span></div><div class="pbar"><div class="pfill" style="width:${pw}%"></div></div><div style="margin-top:8px;font-size:12px;color:var(--tx2)">${j.project_id||''} · ${j.created_at?new Date(j.created_at).toLocaleString():''}</div>${j.error?`<div style="margin-top:6px;font-size:12px;color:var(--red)">${esc(j.error)}</div>`:''}</div>`;
   }).join('');
 }
 
-// ── Recipes ──
+// ═══════════════════════════════════════════════════════════════════
+// Recipes
+// ═══════════════════════════════════════════════════════════════════
 async function loadRecipes() {
   recipes = (await api('/api/recipes')) || [];
   const sel = document.getElementById('np-recipe');
-  sel.innerHTML = recipes.map(r => `<option value="${r.id}">${r.emoji || ''} ${r.name || r.id}</option>`).join('');
-  const c = document.getElementById('rlist');
-  c.innerHTML = recipes.map(r => `<div class="rc"><div class="re">${r.emoji || '📄'}</div><div class="rn">${escHtml(r.name || r.id)}</div><div class="rd">${escHtml(r.description || '')}</div></div>`).join('');
+  sel.innerHTML = recipes.map(r => `<option value="${r.id}">${r.emoji||''} ${r.name||r.id}</option>`).join('');
+  document.getElementById('rlist').innerHTML = recipes.map(r => `<div class="rc"><div style="font-size:28px;margin-bottom:10px">${r.emoji||'📄'}</div><div style="font-size:15px;font-weight:600;margin-bottom:4px">${esc(r.name||r.id)}</div><div style="font-size:12px;color:var(--tx2);line-height:1.4">${esc(r.description||'')}</div></div>`).join('');
 }
 
-// ── Actions ──
+// ═══════════════════════════════════════════════════════════════════
+// Actions
+// ═══════════════════════════════════════════════════════════════════
 async function runPipeline(id) {
   toast('Starting pipeline…');
   const r = await api('/api/jobs', { method: 'POST', body: JSON.stringify({ project_id: id, type: 'auto' }) });
-  if (r && r.success) { toast('Pipeline queued!'); loadDashboard(); } else toast('Failed to start pipeline');
+  if (r && r.success) { toast('Pipeline queued! ✅'); loadDashboard(); } else toast('Failed to queue pipeline');
 }
 async function delProject(id) {
   if (!confirm('Delete this project?')) return;
@@ -540,26 +724,22 @@ async function createProject() {
   toast('Creating project…');
   const r = await api('/api/projects', { method: 'POST', body: JSON.stringify({ title, source, recipe_id: recipe }) });
   if (r && r.project) {
-    toast('Project created!');
-    // Auto-run pipeline
+    toast('Project created! 🎬');
     await runPipeline(r.project.id);
     document.getElementById('np-title').value = '';
     document.getElementById('np-source').value = '';
     nav('projects');
-  } else toast('Failed to create project');
+  } else toast('Failed to create');
 }
-function dlOutput(id) {
-  const base = getApiUrl();
-  window.open(base + '/api/outputs/' + id + '/download', '_blank');
-}
+function dlOutput(id) { window.open(getApiUrl() + '/api/outputs/' + id + '/download', '_blank'); }
 
-// ── Init ──
+// ═══════════════════════════════════════════════════════════════════
+// Init
+// ═══════════════════════════════════════════════════════════════════
 async function init() {
-  if (!getApiUrl()) {
-    document.getElementById('cbanner').style.display = 'flex';
-    document.getElementById('apiInput').value = '';
-  }
+  if (!getApiUrl()) document.getElementById('cbanner').style.display = 'flex';
   await checkApi();
+  connectChat();
   await loadDashboard();
   setInterval(() => { checkApi(); loadDashboard(); }, 5000);
 }

@@ -357,6 +357,99 @@ app.get('/api/recipes/:id', async (req, res) => {
   }
 });
 
+// ─── Chat (Agent ↔ Dashboard Bridge) ────────────────────────────────
+
+// Create chat_messages table
+async function ensureChatTable() {
+  const dbConn = await db.getDb();
+  await dbConn.run(`CREATE TABLE IF NOT EXISTS chat_messages (
+    id TEXT PRIMARY KEY,
+    role TEXT NOT NULL,
+    content TEXT NOT NULL,
+    format TEXT DEFAULT 'text',
+    metadata TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+}
+ensureChatTable();
+
+// SSE for live chat
+const chatClients = new Set();
+function broadcastChat(msg) {
+  const data = JSON.stringify(msg);
+  chatClients.forEach(client => client.write(`data: ${data}\n\n`));
+}
+
+app.get('/api/chat/stream', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders();
+  chatClients.add(res);
+  req.on('close', () => chatClients.delete(res));
+});
+
+app.get('/api/chat', async (req, res) => {
+  try {
+    const dbConn = await db.getDb();
+    const msgs = await dbConn.all(
+      'SELECT * FROM chat_messages ORDER BY created_at ASC LIMIT 100'
+    );
+    res.json(msgs);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/chat', async (req, res) => {
+  try {
+    const { role, content, format, metadata } = req.body;
+    if (!role || !content) return res.status(400).json({ error: 'role and content required' });
+    const id = uuidv4();
+    const dbConn = await db.getDb();
+    await dbConn.run(
+      'INSERT INTO chat_messages (id, role, content, format, metadata) VALUES (?, ?, ?, ?, ?)',
+      [id, role, content, format || 'text', metadata ? JSON.stringify(metadata) : null]
+    );
+    const msg = { id, role, content, format: format || 'text', metadata: metadata || null, created_at: new Date().toISOString() };
+    broadcastChat(msg);
+    res.json(msg);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/chat', async (req, res) => {
+  try {
+    const dbConn = await db.getDb();
+    await dbConn.run('DELETE FROM chat_messages');
+    broadcastChat({ type: 'cleared' });
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Agent chat tool: dashboard messages → agent reads, agent responds
+app.post('/api/tools/video_kitchen_agent_chat', async (req, res) => {
+  try {
+    const { message } = req.body;
+    if (!message) return res.status(400).json({ error: 'message required' });
+    // Store user message
+    await (async () => {
+      const id = uuidv4();
+      const dbConn = await db.getDb();
+      await dbConn.run('INSERT INTO chat_messages (id, role, content, format) VALUES (?, ?, ?, ?)',
+        [id, 'user', message, 'text']);
+      broadcastChat({ id, role: 'user', content: message, format: 'text', created_at: new Date().toISOString() });
+    })();
+    // Return a placeholder — agent will respond via POST /api/chat
+    res.json({ success: true, message: 'Message sent to agent' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ─── Start ────────────────────────────────────────────────────────
 
 app.listen(PORT, () => {
