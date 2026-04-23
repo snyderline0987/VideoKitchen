@@ -3,438 +3,568 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Video Kitchen v0.7.0 — Agentic Video Platform</title>
+<title>FFWD Media | Video Kitchen</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
 <style>
-  :root {
-    --bg: #0a0a0f;
-    --surface: #131320;
-    --surface2: #1a1a2e;
-    --border: #2a2a40;
-    --text: #e8e8f0;
-    --text-dim: #8888a0;
-    --accent: #ff6b35;
-    --accent-glow: rgba(255, 107, 53, 0.15);
-    --green: #34d399;
-    --yellow: #fbbf24;
-    --red: #f87171;
-    --blue: #60a5fa;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+:root{--bg:#0a0a0a;--sf:#111;--sf2:#161616;--sf3:#1c1c1c;--bd:rgba(255,255,255,.06);--bd2:rgba(255,255,255,.12);--tx:#e5e5e5;--tx2:#71717a;--tx3:#52525b;--amber:#f59e0b;--amber-g:rgba(245,158,11,.12);--green:#34d399;--red:#f87171;--blue:#60a5fa;--purple:#a78bfa;--side:240px;--chat:380px;--r:12px;--rs:8px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100dvh;overflow:hidden}
+.app{display:flex;min-height:100dvh}
 
-  .app { display: grid; grid-template-columns: 280px 1fr; grid-template-rows: auto 1fr; min-height: 100vh; }
+/* Sidebar */
+.side{position:fixed;left:0;top:0;bottom:0;width:var(--side);z-index:40;background:var(--bg);border-right:1px solid var(--bd);display:flex;flex-direction:column;transition:transform .3s}
+.side-brand{height:56px;display:flex;align-items:center;padding:0 16px;border-bottom:1px solid var(--bd)}
+.side-logo{width:32px;height:32px;border-radius:8px;background:var(--amber);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.side-title{margin-left:12px;font-size:14px;font-weight:600;letter-spacing:-.3px}
+.side nav{flex:1;padding:12px;overflow-y:auto}
+.nav-sec{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--tx3);padding:8px 12px;margin-top:8px}
+.ni{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;font-size:13px;font-weight:500;color:var(--tx2);cursor:pointer;margin-bottom:2px;border:none;background:none;width:100%;text-align:left;transition:all .15s}
+.ni:hover{background:rgba(255,255,255,.04);color:var(--tx)}
+.ni.active{background:rgba(255,255,255,.08);color:var(--amber)}
+.ni svg{width:18px;height:18px;flex-shrink:0}
+.ni .bc{margin-left:auto;font-size:10px;font-weight:600;background:var(--amber-g);color:var(--amber);padding:2px 7px;border-radius:10px}
+.side-foot{padding:12px;border-top:1px solid var(--bd)}
+.api-st{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;background:rgba(255,255,255,.03);font-size:12px;color:var(--tx2);cursor:pointer}
+.api-st:hover{background:rgba(255,255,255,.06)}
+.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.dot.on{background:var(--green);box-shadow:0 0 6px rgba(52,211,153,.5)}
+.dot.off{background:var(--red)}
+.dot.load{background:var(--amber);animation:pulse 1.5s infinite}
 
-  /* Header */
-  .header { grid-column: 1 / -1; padding: 20px 32px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--surface); }
-  .header h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
-  .header h1 span { color: var(--accent); }
-  .header-badge { font-size: 11px; background: var(--accent-glow); color: var(--accent); padding: 4px 10px; border-radius: 20px; font-weight: 600; }
+/* Main */
+.mw{flex:1;margin-left:var(--side);display:flex;flex-direction:column;transition:margin-right .3s}
+.mw.co{margin-right:var(--chat)}
+.main{flex:1;padding:24px 28px;overflow-y:auto;max-height:100vh}
 
-  /* Sidebar */
-  .sidebar { background: var(--surface); border-right: 1px solid var(--border); padding: 24px 0; overflow-y: auto; }
-  .sidebar h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-dim); padding: 0 24px; margin-bottom: 12px; }
-  .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 24px; cursor: pointer; font-size: 14px; color: var(--text-dim); transition: all 0.15s; border-left: 3px solid transparent; }
-  .nav-item:hover { background: var(--surface2); color: var(--text); }
-  .nav-item.active { color: var(--accent); background: var(--accent-glow); border-left-color: var(--accent); }
-  .nav-icon { font-size: 18px; width: 24px; text-align: center; }
+/* Pages */
+.pg{display:none;animation:fi .2s ease}.pg.act{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.ph{margin-bottom:28px}
+.ph .tag{display:inline-block;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.06);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.15em;color:var(--tx3);margin-bottom:8px}
+.ph h1{font-size:28px;font-weight:700;letter-spacing:-.5px}
+.ph p{font-size:13px;color:var(--tx2);margin-top:4px}
 
-  /* Main content */
-  .main { padding: 32px; overflow-y: auto; }
-  .page { display: none; }
-  .page.active { display: block; }
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.st{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:18px 20px}
+.st .lb{font-size:11px;color:var(--tx2);font-weight:500;margin-bottom:8px}
+.st .vl{font-size:26px;font-weight:700;letter-spacing:-1px;font-variant-numeric:tabular-nums}
 
-  /* Cards */
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
-  .card-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+/* Cards */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.pc{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;transition:all .3s;cursor:pointer}
+.pc:hover{border-color:var(--bd2);transform:translateY(-2px)}
+.pc-thumb{position:relative;aspect-ratio:16/9;background:var(--sf2);overflow:hidden;display:flex;align-items:center;justify-content:center;color:var(--tx3);font-size:32px}
+.pc-thumb img{width:100%;height:100%;object-fit:cover}
+.pc-thumb .ov{position:absolute;inset:0;background:linear-gradient(to top,var(--sf) 0%,transparent 60%)}
+.pc-thumb .sb{position:absolute;top:10px;right:10px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;backdrop-filter:blur(8px)}
+.sb-uploaded,.sb-queued{background:rgba(96,165,250,.2);color:var(--blue)}
+.sb-running{background:rgba(245,158,11,.2);color:var(--amber)}
+.sb-done,.sb-completed{background:rgba(52,211,153,.2);color:var(--green)}
+.sb-failed{background:rgba(248,113,113,.2);color:var(--red)}
+.sb-prepped{background:rgba(167,139,250,.2);color:var(--purple)}
+.pc-info{padding:16px}
+.pc-info h3{font-size:15px;font-weight:600;margin-bottom:4px}
+.pc-info .meta{font-size:12px;color:var(--tx2);display:flex;gap:12px;flex-wrap:wrap}
+.pc-info .meta span{display:flex;align-items:center;gap:4px}
+.pc-act{display:flex;gap:6px;padding:0 16px 14px}
 
-  /* Stats grid */
-  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
-  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
-  .stat-value { font-size: 28px; font-weight: 700; }
-  .stat-label { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
+/* Pipeline */
+.pipe{display:flex;align-items:center;gap:2px;padding:10px 16px}
+.pipe .ps{font-size:10px;padding:3px 8px;border-radius:4px;font-weight:600;background:var(--sf2);border:1px solid var(--bd);color:var(--tx3);white-space:nowrap}
+.pipe .ps.dn{background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.3);color:var(--green)}
+.pipe .ps.cr{background:var(--amber-g);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.pipe .ar{color:var(--tx3);font-size:8px}
 
-  /* Table */
-  .table { width: 100%; border-collapse: collapse; }
-  .table th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); padding: 10px 16px; border-bottom: 1px solid var(--border); }
-  .table td { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 13px; }
-  .table tr:hover { background: var(--surface2); }
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 16px;border-radius:var(--rs);font-size:13px;font-weight:500;border:1px solid var(--bd);background:var(--sf2);color:var(--tx);cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn:hover{border-color:var(--bd2)}
+.btn-p{background:var(--amber);border-color:var(--amber);color:#0a0a0a;font-weight:600}
+.btn-p:hover{background:#d97706;border-color:#d97706}
+.btn-s{padding:5px 12px;font-size:12px}
+.btn-d{border-color:rgba(248,113,113,.3);color:var(--red)}
+.btn-d:hover{background:rgba(248,113,113,.1)}
+.btn-g{border:none;background:none;color:var(--tx2)}
+.btn-g:hover{color:var(--tx);background:rgba(255,255,255,.04)}
 
-  /* Badges */
-  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-  .badge-done { background: rgba(52, 211, 153, 0.15); color: var(--green); }
-  .badge-running { background: rgba(251, 191, 36, 0.15); color: var(--yellow); }
-  .badge-failed { background: rgba(248, 113, 113, 0.15); color: var(--red); }
-  .badge-queued { background: rgba(96, 165, 250, 0.15); color: var(--blue); }
-  .badge-uploaded { background: rgba(96, 165, 250, 0.15); color: var(--blue); }
-  .badge-prepped { background: rgba(251, 191, 36, 0.15); color: var(--yellow); }
+/* Forms */
+.fg{margin-bottom:16px}
+.fl{display:block;font-size:11px;color:var(--tx2);margin-bottom:6px;font-weight:500;text-transform:uppercase;letter-spacing:.5px}
+.fi,.fs{width:100%;padding:10px 14px;background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs);color:var(--tx);font-size:14px;outline:none;transition:border .15s}
+.fi:focus,.fs:focus{border-color:var(--amber)}
+.fi::placeholder{color:var(--tx3)}
 
-  /* Buttons */
-  .btn { padding: 8px 18px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); color: var(--text); font-size: 13px; cursor: pointer; transition: all 0.15s; font-weight: 500; }
-  .btn:hover { border-color: var(--accent); color: var(--accent); }
-  .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .btn-primary:hover { background: #e85a28; }
-  .btn-sm { padding: 5px 12px; font-size: 12px; }
-  .btn-danger { border-color: var(--red); color: var(--red); }
+/* Table */
+.tw{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--tx2);font-weight:500;padding:10px 16px;border-bottom:1px solid var(--bd);background:var(--sf2)}
+.tbl td{padding:11px 16px;border-bottom:1px solid var(--bd);font-size:13px}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:rgba(255,255,255,.02)}
 
-  /* Forms */
-  .form-group { margin-bottom: 16px; }
-  .form-label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-  .form-input, .form-select { width: 100%; padding: 10px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 14px; }
-  .form-input:focus, .form-select:focus { outline: none; border-color: var(--accent); }
+/* Job Card */
+.jc{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:20px;margin-bottom:12px}
+.jh{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.jid{font-family:'SF Mono','Fira Code',monospace;font-size:12px;color:var(--tx2)}
+.pbar{height:4px;background:var(--sf2);border-radius:2px;overflow:hidden}
+.pfill{height:100%;background:var(--amber);border-radius:2px;transition:width .5s}
 
-  /* Scene grid */
-  .scene-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
-  .scene-card { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; cursor: pointer; transition: all 0.15s; }
-  .scene-card:hover { border-color: var(--accent); }
-  .scene-card.selected { border-color: var(--accent); box-shadow: 0 0 12px var(--accent-glow); }
-  .scene-thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; background: var(--surface2); display: flex; align-items: center; justify-content: center; color: var(--text-dim); font-size: 12px; }
-  .scene-meta { padding: 10px; }
-  .scene-score { font-size: 18px; font-weight: 700; color: var(--accent); }
-  .scene-time { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+/* Chat */
+.cpan{position:fixed;right:0;top:0;bottom:0;width:var(--chat);z-index:40;background:var(--bg);border-left:1px solid var(--bd);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s}
+.cpan.open{transform:translateX(0)}
+.ch{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid var(--bd)}
+.ch h3{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
+.cm{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.cmsg{max-width:90%;padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.5;word-wrap:break-word}
+.cmsg.u{align-self:flex-end;background:var(--amber);color:#0a0a0a;border-bottom-right-radius:4px}
+.cmsg.a{align-self:flex-start;background:var(--sf2);border:1px solid var(--bd);border-bottom-left-radius:4px}
+.cmsg.s{align-self:center;background:none;color:var(--tx2);font-size:11px;font-style:italic}
+.cmsg .mt{font-size:10px;opacity:.6;margin-top:4px}
+.ciw{padding:12px;border-top:1px solid var(--bd);display:flex;gap:8px}
+.ci{flex:1;padding:10px 14px;background:var(--sf2);border:1px solid var(--bd);border-radius:10px;color:var(--tx);font-size:13px;outline:none;resize:none;max-height:120px;min-height:40px;line-height:1.4;font-family:inherit}
+.ci:focus{border-color:var(--amber)}
+.ci::placeholder{color:var(--tx3)}
 
-  /* Recipe cards */
-  .recipe-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
-  .recipe-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.15s; }
-  .recipe-card:hover { border-color: var(--accent); transform: translateY(-2px); }
-  .recipe-card.selected { border-color: var(--accent); box-shadow: 0 0 20px var(--accent-glow); }
-  .recipe-emoji { font-size: 32px; margin-bottom: 12px; }
-  .recipe-name { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
-  .recipe-meta { font-size: 12px; color: var(--text-dim); }
+/* Search */
+.sbar{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.siw{flex:1;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.04);border:1px solid var(--bd);border-radius:var(--rs);padding:0 12px}
+.siw svg{color:var(--tx3);flex-shrink:0}
+.siw input{flex:1;padding:9px 0;background:none;border:none;color:var(--tx);font-size:13px;outline:none}
+.siw input::placeholder{color:var(--tx3)}
 
-  /* Job log */
-  .job-log { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; line-height: 1.6; max-height: 400px; overflow-y: auto; white-space: pre-wrap; color: var(--text-dim); }
+/* Recipes */
+.rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+.rc{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:20px;transition:all .2s}
+.rc:hover{border-color:var(--bd2);transform:translateY(-2px)}
+.rc .re{font-size:28px;margin-bottom:10px}
+.rc .rn{font-size:15px;font-weight:600;margin-bottom:4px}
+.rc .rd{font-size:12px;color:var(--tx2);line-height:1.4}
 
-  /* Empty state */
-  .empty { text-align: center; padding: 60px 20px; color: var(--text-dim); }
-  .empty-icon { font-size: 48px; margin-bottom: 16px; }
-  .empty h3 { font-size: 18px; color: var(--text); margin-bottom: 8px; }
+/* Scenes */
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.sc{background:var(--sf);border:1px solid var(--bd);border-radius:var(--rs);overflow:hidden;transition:all .15s}
+.sc:hover{border-color:var(--amber)}
+.sc img{width:100%;aspect-ratio:16/9;object-fit:cover;background:var(--sf2)}
+.sc .si{padding:8px 10px}
+.sc .sv{font-size:16px;font-weight:700;color:var(--amber)}
+.sc .stm{font-size:10px;color:var(--tx2)}
 
-  /* Toast */
-  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 20px; font-size: 14px; transform: translateY(100px); opacity: 0; transition: all 0.3s; z-index: 100; }
-  .toast.show { transform: translateY(0); opacity: 1; }
+/* Empty */
+.emp{text-align:center;padding:60px 20px}
+.emp-i{font-size:40px;margin-bottom:12px}
+.emp h3{font-size:16px;margin-bottom:6px}
+.emp p{font-size:13px;color:var(--tx2)}
 
-  /* Responsive */
-  @media (max-width: 768px) {
-    .app { grid-template-columns: 1fr; }
-    .sidebar { display: none; }
-    .main { padding: 16px; }
-  }
+/* Toast */
+.toast-c{position:fixed;bottom:20px;right:20px;z-index:200;display:flex;flex-direction:column;gap:8px}
+.toast{padding:12px 18px;background:var(--sf);border:1px solid var(--bd);border-radius:10px;font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.4);animation:su .3s ease}
+@keyframes su{from{transform:translateY(20px);opacity:0}}
 
-  /* Animations */
-  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-  .pulse { animation: pulse 2s infinite; }
+/* Config banner */
+.cbanner{background:var(--amber-g);border:1px solid rgba(245,158,11,.2);border-radius:var(--r);padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;gap:12px;font-size:13px}
+.cbanner input{flex:1;padding:6px 12px;background:var(--sf2);border:1px solid var(--bd);border-radius:6px;color:var(--tx);font-size:13px;outline:none}
+.cbanner input:focus{border-color:var(--amber)}
 
-  /* Pipeline steps */
-  .pipeline-steps { display: flex; gap: 4px; align-items: center; margin: 12px 0; }
-  .step { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; background: var(--bg); border: 1px solid var(--border); color: var(--text-dim); }
-  .step.active { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .step.done { background: rgba(52, 211, 153, 0.15); border-color: var(--green); color: var(--green); }
-  .step-arrow { color: var(--text-dim); font-size: 10px; }
+/* Mobile */
+.mt{display:none;position:fixed;top:12px;left:12px;z-index:50;width:40px;height:40px;border-radius:10px;background:var(--sf);border:1px solid var(--bd);align-items:center;justify-content:center;cursor:pointer;color:var(--tx)}
+@media(max-width:768px){.side{transform:translateX(-100%)}.side.open{transform:translateX(0)}.mw{margin-left:0!important}.mw.co{margin-right:0!important}.mt{display:flex}.stats{grid-template-columns:repeat(2,1fr)}.pgrid{grid-template-columns:1fr}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{animation:spin 1s linear inline-block}
+.typing span{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--tx2);margin:0 2px;animation:pulse 1s infinite}
+.typing span:nth-child(2){animation-delay:.2s}
+.typing span:nth-child(3){animation-delay:.4s}
 </style>
 </head>
 <body>
+<button class="mt" onclick="document.querySelector('.side').classList.toggle('open')">☰</button>
 <div class="app">
-  <header class="header">
-    <h1>🍳 <span>Video Kitchen</span> v0.7.0</h1>
-    <div class="header-badge">Agentic Video Platform</div>
-  </header>
-
-  <nav class="sidebar">
-    <h3>Navigation</h3>
-    <div class="nav-item active" data-page="dashboard"><span class="nav-icon">📊</span> Dashboard</div>
-    <div class="nav-item" data-page="projects"><span class="nav-icon">🎬</span> Projects</div>
-    <div class="nav-item" data-page="recipes"><span class="nav-icon">📖</span> Recipes</div>
-    <div class="nav-item" data-page="new-project"><span class="nav-icon">➕</span> New Project</div>
+<!-- Sidebar -->
+<aside class="side" id="sidebar">
+  <div class="side-brand"><div class="side-logo">🎬</div><span class="side-title">FFWD Media</span></div>
+  <nav>
+    <div class="nav-sec">Main</div>
+    <button class="ni active" data-page="dashboard" onclick="nav('dashboard')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Dashboard</button>
+    <button class="ni" data-page="projects" onclick="nav('projects')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>Projects<span class="bc" id="npc">0</span></button>
+    <button class="ni" data-page="jobs" onclick="nav('jobs')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4z"/></svg>Jobs<span class="bc" id="njc" style="display:none">0</span></button>
+    <div class="nav-sec">Create</div>
+    <button class="ni" data-page="new-project" onclick="nav('new-project')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>New Project</button>
+    <button class="ni" data-page="recipes" onclick="nav('recipes')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"/></svg>Recipes</button>
   </nav>
+  <div class="side-foot">
+    <div class="api-st" onclick="showApiConfig()">
+      <div class="dot load" id="adot"></div>
+      <span id="astatus">Connecting…</span>
+    </div>
+  </div>
+</aside>
 
-  <main class="main">
+<!-- Main -->
+<div class="mw" id="mw">
+  <div class="main">
+    <!-- API Config -->
+    <div class="cbanner" id="cbanner" style="display:none">
+      <span>🔗 API URL:</span>
+      <input id="apiInput" placeholder="http://localhost:3001">
+      <button class="btn btn-p btn-s" onclick="setApiUrl()">Connect</button>
+    </div>
+
     <!-- Dashboard -->
-    <div class="page active" id="page-dashboard">
-      <h2 style="margin-bottom:24px;">Dashboard</h2>
-      <div class="stats" id="stats-grid">
-        <div class="stat"><div class="stat-value" id="stat-projects">-</div><div class="stat-label">Projects</div></div>
-        <div class="stat"><div class="stat-value" id="stat-jobs">-</div><div class="stat-label">Active Jobs</div></div>
-        <div class="stat"><div class="stat-value" id="stat-outputs">-</div><div class="stat-label">Outputs</div></div>
-        <div class="stat"><div class="stat-value" id="stat-recipes">-</div><div class="stat-label">Recipes</div></div>
+    <div class="pg act" id="p-dashboard">
+      <div class="ph"><div class="tag">Video Kitchen</div><h1>Dashboard</h1><p>Real-time overview of your video production pipeline</p></div>
+      <div class="stats">
+        <div class="st"><div class="lb">Total Projects</div><div class="vl" id="s-p">—</div></div>
+        <div class="st"><div class="lb">Active Jobs</div><div class="vl" id="s-j">—</div></div>
+        <div class="st"><div class="lb">Outputs</div><div class="vl" id="s-o">—</div></div>
+        <div class="st"><div class="lb">Recipes</div><div class="vl" id="s-r">—</div></div>
       </div>
-      <div class="card">
-        <div class="card-title">📋 Recent Jobs</div>
-        <table class="table">
-          <thead><tr><th>ID</th><th>Project</th><th>Type</th><th>Status</th><th>Created</th></tr></thead>
-          <tbody id="jobs-table"></tbody>
-        </table>
-        <div class="empty" id="jobs-empty" style="display:none;">
-          <div class="empty-icon">📭</div>
-          <h3>No jobs yet</h3>
-          <p>Create a project and run the pipeline to see jobs here.</p>
-        </div>
-      </div>
+      <div class="tw"><table class="tbl"><thead><tr><th>ID</th><th>Project</th><th>Type</th><th>Status</th><th>Created</th></tr></thead><tbody id="jtb"></tbody></table></div>
     </div>
 
     <!-- Projects -->
-    <div class="page" id="page-projects">
-      <h2 style="margin-bottom:24px;">Projects</h2>
-      <div id="projects-list"></div>
+    <div class="pg" id="p-projects">
+      <div class="ph"><div class="tag">Video Kitchen</div><h1>Projects</h1><p>Manage and edit your video productions</p></div>
+      <div class="sbar">
+        <div class="siw"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input placeholder="Search projects…" id="psearch" oninput="renderProjects()"></div>
+        <button class="btn btn-p" onclick="nav('new-project')">+ New Project</button>
+      </div>
+      <div class="pgrid" id="plist"></div>
     </div>
 
-    <!-- Recipes -->
-    <div class="page" id="page-recipes">
-      <h2 style="margin-bottom:24px;">Recipes</h2>
-      <div class="recipe-grid" id="recipes-grid"></div>
+    <!-- Project Detail -->
+    <div class="pg" id="p-detail">
+      <div style="margin-bottom:20px"><button class="btn btn-g" onclick="nav('projects')">← Back to Projects</button></div>
+      <div id="detail-content"></div>
+    </div>
+
+    <!-- Jobs -->
+    <div class="pg" id="p-jobs">
+      <div class="ph"><div class="tag">Pipeline</div><h1>Jobs</h1><p>Track processing and automation jobs</p></div>
+      <div id="jlist"></div>
     </div>
 
     <!-- New Project -->
-    <div class="page" id="page-new-project">
-      <h2 style="margin-bottom:24px;">New Project</h2>
-      <div class="card" style="max-width:500px;">
-        <div class="card-title">🎬 Create Project</div>
-        <div class="form-group">
-          <label class="form-label">Title</label>
-          <input class="form-input" id="new-title" placeholder="My Video Project">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Video Source (path or URL)</label>
-          <input class="form-input" id="new-source" placeholder="/path/to/video.mp4">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Recipe</label>
-          <select class="form-select" id="new-recipe"></select>
-        </div>
-        <button class="btn btn-primary" id="btn-create-project">Create & Run Pipeline</button>
+    <div class="pg" id="p-new-project">
+      <div class="ph"><div class="tag">Create</div><h1>New Project</h1><p>Upload a video and run the pipeline</p></div>
+      <div style="max-width:500px">
+        <div class="fg"><label class="fl">Title</label><input class="fi" id="np-title" placeholder="My Video Project"></div>
+        <div class="fg"><label class="fl">Video Source (path or URL)</label><input class="fi" id="np-source" placeholder="/path/to/video.mp4 or https://…"></div>
+        <div class="fg"><label class="fl">Recipe</label><select class="fs" id="np-recipe"></select></div>
+        <button class="btn btn-p" onclick="createProject()">🎬 Create & Run Pipeline</button>
       </div>
     </div>
-  </main>
+
+    <!-- Recipes -->
+    <div class="pg" id="p-recipes">
+      <div class="ph"><div class="tag">Library</div><h1>Recipes</h1><p>Pre-configured output styles and formats</p></div>
+      <div class="rgrid" id="rlist"></div>
+    </div>
+  </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<!-- Chat Panel -->
+<div class="cpan" id="chatpan">
+  <div class="ch">
+    <h3><div class="dot on"></div>Agent Chat</h3>
+    <button class="btn btn-g btn-s" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="cm" id="cmsgs"></div>
+  <div class="ciw">
+    <textarea class="ci" id="cinput" placeholder="Ask the agent anything about your projects…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}"></textarea>
+    <button class="btn btn-p btn-s" onclick="sendChat()" style="align-self:flex-end">➤</button>
+  </div>
+</div>
+
+<!-- Chat toggle (in sidebar) -->
+<div id="chatToggle" style="position:fixed;bottom:20px;right:20px;z-index:35">
+  <button class="btn" onclick="toggleChat()" style="border-radius:50%;width:48px;height:48px;font-size:20px;box-shadow:0 4px 16px rgba(0,0,0,.4)">💬</button>
+</div>
+
+<div class="toast-c" id="toasts"></div>
 
 <script>
-const API = window.location.port === '3001' ? '' : 'http://localhost:3001';
-
-// ─── State ─────────────────────────────────────────────────
-let projects = [];
-let jobs = [];
-let recipes = [];
-
-// ─── Navigation ────────────────────────────────────────────
-document.querySelectorAll('.nav-item').forEach(item => {
-  item.addEventListener('click', () => {
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    item.classList.add('active');
-    document.getElementById('page-' + item.dataset.page).classList.add('active');
-  });
-});
-
-// ─── Toast ─────────────────────────────────────────────────
-function toast(msg, duration = 3000) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), duration);
+// ── API ──
+let API = localStorage.getItem('vk_api_url') || '';
+function getApiUrl() {
+  const p = new URLSearchParams(location.search);
+  if (p.get('api')) { API = p.get('api'); localStorage.setItem('vk_api_url', API); }
+  if (!API && location.port === '3001') API = '';
+  return API || (location.hostname === 'localhost' || location.hostname === '127.0.0.1' ? 'http://localhost:3001' : '');
 }
+getApiUrl();
 
-// ─── API helpers ───────────────────────────────────────────
 async function api(path, opts = {}) {
+  const base = getApiUrl();
   try {
-    const res = await fetch(API + path, { headers: { 'Content-Type': 'application/json', ...opts.headers }, ...opts });
+    const res = await fetch(base + path, { headers: { 'Content-Type': 'application/json', ...opts.headers }, ...opts });
     return await res.json();
-  } catch (e) {
-    console.error('API error:', e);
-    toast('API connection failed — is the backend running on port 3001?');
-    return null;
-  }
+  } catch (e) { console.error('API:', e); return null; }
 }
 
-// ─── Load data ─────────────────────────────────────────────
-async function loadDashboard() {
-  projects = (await api('/api/projects')) || [];
-  jobs = (await api('/api/jobs')) || [];
-  recipes = (await api('/api/recipes')) || [];
+// ── State ──
+let projects = [], jobs = [], recipes = [], chatMsgs = [];
 
-  document.getElementById('stat-projects').textContent = projects.length;
-  document.getElementById('stat-jobs').textContent = jobs.filter(j => j.status === 'running' || j.status === 'queued').length;
-  const outputs = projects.reduce((acc, p) => acc + (p.outputs?.length || 0), 0);
-  document.getElementById('stat-outputs').textContent = outputs;
-  document.getElementById('stat-recipes').textContent = recipes.length;
+// ── Navigation ──
+function nav(page) {
+  document.querySelectorAll('.ni').forEach(n => n.classList.toggle('active', n.dataset.page === page));
+  document.querySelectorAll('.pg').forEach(p => p.classList.remove('act'));
+  const el = document.getElementById('p-' + page);
+  if (el) el.classList.add('act');
+  document.querySelector('.side').classList.remove('open');
+  if (page === 'dashboard') loadDashboard();
+  if (page === 'projects') loadProjects();
+  if (page === 'jobs') loadJobs();
+  if (page === 'new-project') loadRecipes();
+  if (page === 'recipes') loadRecipes();
+}
 
-  // Jobs table
-  const tbody = document.getElementById('jobs-table');
-  const empty = document.getElementById('jobs-empty');
-  if (jobs.length === 0) {
-    tbody.innerHTML = '';
-    empty.style.display = 'block';
+// ── Toast ──
+function toast(msg) {
+  const c = document.getElementById('toasts');
+  const d = document.createElement('div');
+  d.className = 'toast'; d.textContent = msg; c.appendChild(d);
+  setTimeout(() => d.remove(), 3000);
+}
+
+// ── API Status ──
+async function checkApi() {
+  const dot = document.getElementById('adot');
+  const st = document.getElementById('astatus');
+  dot.className = 'dot load'; st.textContent = 'Connecting…';
+  const r = await api('/api/health');
+  if (r && r.status === 'ok') {
+    dot.className = 'dot on'; st.textContent = 'Online · v' + r.version;
+    document.getElementById('cbanner').style.display = 'none';
   } else {
-    empty.style.display = 'none';
-    tbody.innerHTML = jobs.slice(0, 10).map(j => `
-      <tr>
-        <td style="font-family:monospace;">${j.id}</td>
-        <td>${j.project_id}</td>
-        <td>${j.type}</td>
-        <td><span class="badge badge-${j.status}">${j.status}</span></td>
-        <td>${new Date(j.created_at).toLocaleString()}</td>
-      </tr>
-    `).join('');
+    dot.className = 'dot off'; st.textContent = 'Offline';
+    if (!getApiUrl()) document.getElementById('cbanner').style.display = 'flex';
   }
 }
 
+function showApiConfig() {
+  const b = document.getElementById('cbanner');
+  b.style.display = b.style.display === 'none' ? 'flex' : 'none';
+  if (b.style.display === 'flex') document.getElementById('apiInput').value = getApiUrl();
+}
+function setApiUrl() {
+  const v = document.getElementById('apiInput').value.replace(/\/+$/, '');
+  if (v) { API = v; localStorage.setItem('vk_api_url', v); }
+  checkApi();
+}
+
+// ── Chat ──
+function toggleChat() {
+  const p = document.getElementById('chatpan');
+  const m = document.getElementById('mw');
+  const t = document.getElementById('chatToggle');
+  p.classList.toggle('open'); m.classList.toggle('co');
+  t.style.display = p.classList.contains('open') ? 'none' : 'block';
+}
+async function sendChat() {
+  const inp = document.getElementById('cinput');
+  const msg = inp.value.trim(); if (!msg) return;
+  inp.value = '';
+  chatMsgs.push({ role: 'user', text: msg, time: new Date() });
+  renderChat();
+  // Show typing
+  chatMsgs.push({ role: 'typing' });
+  renderChat();
+  try {
+    const r = await api('/api/tools/video_kitchen_agent_chat', {
+      method: 'POST', body: JSON.stringify({ message: msg })
+    });
+    chatMsgs.pop(); // remove typing
+    if (r && r.result) {
+      chatMsgs.push({ role: 'assistant', text: r.result, time: new Date() });
+    } else {
+      chatMsgs.push({ role: 'assistant', text: 'I received your message. Pipeline commands are available via the Projects and Jobs pages. Try: "Run pipeline on project X" or "Show me scene scores for taxi test".', time: new Date() });
+    }
+  } catch (e) {
+    chatMsgs.pop();
+    chatMsgs.push({ role: 'assistant', text: 'Could not reach the agent. Make sure the backend is running.', time: new Date() });
+  }
+  renderChat();
+}
+function renderChat() {
+  const c = document.getElementById('cmsgs');
+  c.innerHTML = chatMsgs.map(m => {
+    if (m.role === 'typing') return '<div class="cmsg a"><div class="typing"><span></span><span></span><span></span></div></div>';
+    const cls = m.role === 'user' ? 'u' : m.role === 'system' ? 's' : 'a';
+    const t = m.time ? `<div class="mt">${m.time.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</div>` : '';
+    return `<div class="cmsg ${cls}">${escHtml(m.text)}${t}</div>`;
+  }).join('');
+  c.scrollTop = c.scrollHeight;
+}
+function escHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+// ── Dashboard ──
+async function loadDashboard() {
+  const [p, j, o, r] = await Promise.all([
+    api('/api/projects'), api('/api/jobs'), api('/api/outputs'), api('/api/recipes')
+  ]);
+  projects = p || []; jobs = j || []; recipes = r || [];
+  const outputs = o || [];
+  document.getElementById('s-p').textContent = projects.length;
+  document.getElementById('s-j').textContent = jobs.filter(j => j.status === 'running' || j.status === 'queued').length;
+  document.getElementById('s-o').textContent = outputs.length;
+  document.getElementById('s-r').textContent = recipes.length;
+  document.getElementById('npc').textContent = projects.length;
+  const active = jobs.filter(j => j.status === 'running' || j.status === 'queued').length;
+  const njc = document.getElementById('njc');
+  njc.textContent = active; njc.style.display = active > 0 ? 'inline' : 'none';
+  // Jobs table
+  const tb = document.getElementById('jtb');
+  if (!jobs.length) { tb.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--tx2)">No jobs yet</td></tr>'; return; }
+  tb.innerHTML = jobs.slice(0, 15).map(j => `<tr>
+    <td style="font-family:monospace;font-size:12px">${j.id.slice(0,8)}</td>
+    <td>${escHtml(j.project_id || '')}</td>
+    <td>${j.type || ''}</td>
+    <td><span class="sb sb-${j.status}">${j.status}</span></td>
+    <td style="color:var(--tx2);font-size:12px">${j.created_at ? new Date(j.created_at).toLocaleString() : ''}</td>
+  </tr>`).join('');
+}
+
+// ── Projects ──
 async function loadProjects() {
   projects = (await api('/api/projects')) || [];
-  const container = document.getElementById('projects-list');
-  if (projects.length === 0) {
-    container.innerHTML = '<div class="empty"><div class="empty-icon">🎬</div><h3>No projects yet</h3><p>Create your first project to get started.</p></div>';
-    return;
-  }
-  container.innerHTML = projects.map(p => `
-    <div class="card">
-      <div class="card-title">
-        ${p.title || p.id}
-        <span class="badge badge-${p.status}">${p.status}</span>
+  renderProjects();
+}
+function renderProjects() {
+  const q = (document.getElementById('psearch')?.value || '').toLowerCase();
+  const filtered = projects.filter(p => !q || (p.title || p.id).toLowerCase().includes(q));
+  const c = document.getElementById('plist');
+  if (!filtered.length) { c.innerHTML = '<div class="emp" style="grid-column:1/-1"><div class="emp-i">🎬</div><h3>No projects</h3><p>Create your first project to get started.</p></div>'; return; }
+  c.innerHTML = filtered.map(p => {
+    const stages = ['uploaded','prepped','analyzed','plated','seasoned','done','completed'];
+    const si = stages.indexOf(p.status);
+    const pipeHtml = ['Upload','Prep','Analyze','Plate','Season','Done'].map((s, i) => {
+      const cls = si >= i ? 'dn' : '';
+      const cr = (si >= i && (i === si || (i < si && p.status === stages[si]))) ? ' cr' : '';
+      return `<span class="ps${cls}${cr}">${s}</span>${i < 5 ? '<span class="ar">→</span>' : ''}`;
+    }).join('');
+    return `<div class="pc" onclick="showDetail('${p.id}')">
+      <div class="pc-thumb"><span>🎬</span><div class="ov"></div><span class="sb sb-${p.status}">${p.status}</span></div>
+      <div class="pc-info"><h3>${escHtml(p.title || p.id)}</h3><div class="meta">
+        <span>📷 ${p.scene_count || 0} scenes</span><span>📖 ${p.recipe_id || 'none'}</span>
+        <span>🕐 ${p.created_at ? new Date(p.created_at).toLocaleDateString() : ''}</span>
+      </div></div>
+      <div class="pipe">${pipeHtml}</div>
+      <div class="pc-act" onclick="event.stopPropagation()">
+        <button class="btn btn-p btn-s" onclick="runPipeline('${p.id}')">▶ Run</button>
+        <button class="btn btn-d btn-s" onclick="delProject('${p.id}')">🗑</button>
       </div>
-      <p style="color:var(--text-dim);font-size:13px;margin-bottom:12px;">
-        ${p.scene_count || 0} scenes · Recipe: ${p.recipe_id || 'none'} · Created ${new Date(p.created_at).toLocaleDateString()}
-      </p>
-      <div class="pipeline-steps">
-        <span class="step ${['uploaded','prepped','analyzed','plated','seasoned','done'].indexOf(p.status) >= 0 ? 'done' : ''}">📤 Upload</span>
-        <span class="step-arrow">→</span>
-        <span class="step ${['prepped','analyzed','plated','seasoned','done'].indexOf(p.status) >= 0 ? 'done' : ''}">🔪 Prep</span>
-        <span class="step-arrow">→</span>
-        <span class="step ${['analyzed','plated','seasoned','done'].indexOf(p.status) >= 0 ? 'done' : ''}">🧠 Analyze</span>
-        <span class="step-arrow">→</span>
-        <span class="step ${['plated','seasoned','done'].indexOf(p.status) >= 0 ? 'done' : ''}">🍽️ Plate</span>
-        <span class="step-arrow">→</span>
-        <span class="step ${['seasoned','done'].indexOf(p.status) >= 0 ? 'done' : ''}">🎵 Season</span>
-        <span class="step-arrow">→</span>
-        <span class="step ${p.status === 'done' ? 'done' : ''}">✅ Done</span>
-      </div>
-      <div style="margin-top:12px;display:flex;gap:8px;">
-        <button class="btn btn-sm" onclick="runAutoPipeline('${p.id}')">▶ Run Auto Pipeline</button>
-        <button class="btn btn-sm" onclick="viewProject('${p.id}')">📋 Details</button>
-        <button class="btn btn-sm btn-danger" onclick="deleteProject('${p.id}')">🗑️</button>
-      </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
+// ── Detail ──
+async function showDetail(id) {
+  nav('detail');
+  const p = await api('/api/projects/' + id);
+  if (!p || !p.project) { document.getElementById('detail-content').innerHTML = '<div class="emp"><h3>Project not found</h3></div>'; return; }
+  const pr = p.project, sc = p.scenes || [], out = p.outputs || [], jb = p.jobs || [];
+  let html = `<div class="ph"><div class="tag">${escHtml(pr.recipe_id || 'Project')}</div><h1>${escHtml(pr.title || pr.id)}</h1><p>${escHtml(pr.source || '')}</p></div>`;
+
+  // Scenes
+  if (sc.length) {
+    html += `<h2 style="font-size:16px;margin-bottom:12px">📷 Scenes (${sc.length})</h2><div class="sgrid">`;
+    sc.forEach(s => {
+      html += `<div class="sc"><img src="${s.thumbnail || ''}" onerror="this.style.display='none'"><div class="si"><div class="sv">${(s.visual_score || 0).toFixed(1)}</div><div class="stm">${fmtTime(s.start_time)} → ${fmtTime(s.end_time)}</div></div></div>`;
+    });
+    html += '</div>';
+  }
+
+  // Outputs
+  if (out.length) {
+    html += `<h2 style="font-size:16px;margin:24px 0 12px">📦 Outputs (${out.length})</h2><div class="sgrid">`;
+    out.forEach(o => {
+      html += `<div class="pc"><div class="pc-thumb"><span>🎥</span></div><div class="pc-info"><h3>${escHtml(o.filename || o.id)}</h3><div class="meta"><span>${o.file_size || ''}</span></div></div>
+      <div class="pc-act"><button class="btn btn-p btn-s" onclick="dlOutput('${o.id}')">⬇ Download</button></div></div>`;
+    });
+    html += '</div>';
+  }
+
+  // Job history
+  if (jb.length) {
+    html += `<h2 style="font-size:16px;margin:24px 0 12px">📋 Job History</h2>`;
+    jb.forEach(j => {
+      html += `<div class="jc"><div class="jh"><span class="jid">${j.id.slice(0,8)}</span><span class="sb sb-${j.status}">${j.status}</span></div>
+      <div class="pbar"><div class="pfill" style="width:${j.progress || (j.status === 'done' ? 100 : j.status === 'running' ? 50 : 0)}%"></div></div></div>`;
+    });
+  }
+
+  document.getElementById('detail-content').innerHTML = html;
+}
+
+function fmtTime(s) { if (!s && s !== 0) return '—'; const m = Math.floor(s/60), sec = Math.floor(s%60); return `${m}:${String(sec).padStart(2,'0')}`; }
+
+// ── Jobs ──
+async function loadJobs() {
+  jobs = (await api('/api/jobs')) || [];
+  const c = document.getElementById('jlist');
+  if (!jobs.length) { c.innerHTML = '<div class="emp"><div class="emp-i">📋</div><h3>No jobs yet</h3><p>Run a pipeline to see jobs here.</p></div>'; return; }
+  c.innerHTML = jobs.map(j => {
+    const pw = j.status === 'done' ? 100 : j.status === 'running' ? (j.progress || 50) : j.status === 'failed' ? 100 : 0;
+    return `<div class="jc"><div class="jh"><span class="jid">${j.id} · ${j.type}</span><span class="sb sb-${j.status}">${j.status}</span></div>
+    <div class="pbar"><div class="pfill" style="width:${pw}%"></div></div>
+    <div style="margin-top:8px;font-size:12px;color:var(--tx2)">${j.project_id || ''} · ${j.created_at ? new Date(j.created_at).toLocaleString() : ''}</div>
+    ${j.error ? `<div style="margin-top:6px;font-size:12px;color:var(--red)">${escHtml(j.error)}</div>` : ''}</div>`;
+  }).join('');
+}
+
+// ── Recipes ──
 async function loadRecipes() {
   recipes = (await api('/api/recipes')) || [];
-  const grid = document.getElementById('recipes-grid');
-  const emojis = { social_teaser_w24: '📱', spicy_trailer: '🌶️', highlight_abendsendung: '📺', bts_soup: '🥣' };
-  grid.innerHTML = recipes.map(r => `
-    <div class="recipe-card">
-      <div class="recipe-emoji">${emojis[r.id] || '🍳'}</div>
-      <div class="recipe-name">${r.name}</div>
-      <div class="recipe-meta">
-        Duration: ${r.config.target_duration} · Aspect: ${r.config.aspect_ratio}<br>
-        Music: ${r.config.music_mood} · Transitions: ${r.config.transitions}
-      </div>
-    </div>
-  `).join('');
-
-  // Also populate new project select
-  const sel = document.getElementById('new-recipe');
-  sel.innerHTML = recipes.map(r => `<option value="${r.id}">${r.name}</option>`).join('');
+  const sel = document.getElementById('np-recipe');
+  sel.innerHTML = recipes.map(r => `<option value="${r.id}">${r.emoji || ''} ${r.name || r.id}</option>`).join('');
+  const c = document.getElementById('rlist');
+  c.innerHTML = recipes.map(r => `<div class="rc"><div class="re">${r.emoji || '📄'}</div><div class="rn">${escHtml(r.name || r.id)}</div><div class="rd">${escHtml(r.description || '')}</div></div>`).join('');
 }
 
-// ─── Actions ───────────────────────────────────────────────
-async function createProject() {
-  const title = document.getElementById('new-title').value;
-  const source = document.getElementById('new-source').value;
-  const recipe = document.getElementById('new-recipe').value;
-  if (!source) { toast('Please provide a video source path'); return; }
-  const project = await api('/api/projects', {
-    method: 'POST',
-    body: JSON.stringify({ title: title || source.split('/').pop(), source, recipe_id: recipe })
-  });
-  if (!project) return;
-  toast('Project created! Starting pipeline...');
-  await runAutoPipeline(project.id);
-  document.getElementById('new-title').value = '';
-  document.getElementById('new-source').value = '';
+// ── Actions ──
+async function runPipeline(id) {
+  toast('Starting pipeline…');
+  const r = await api('/api/jobs', { method: 'POST', body: JSON.stringify({ project_id: id, type: 'auto' }) });
+  if (r && r.success) { toast('Pipeline queued!'); loadDashboard(); } else toast('Failed to start pipeline');
 }
-
-async function runAutoPipeline(projectId) {
-  toast('Queuing auto pipeline...');
-  const job = await api('/api/jobs', {
-    method: 'POST',
-    body: JSON.stringify({ project_id: projectId, type: 'auto', recipe_id: undefined, params: {} })
-  });
-  if (!job) return;
-  await api(`/api/jobs/${job.id}/run`, { method: 'POST' });
-  toast('Pipeline started! Job: ' + job.id);
-  setTimeout(loadDashboard, 3000);
-}
-
-async function deleteProject(projectId) {
+async function delProject(id) {
   if (!confirm('Delete this project?')) return;
-  await api(`/api/projects/${projectId}`, { method: 'DELETE' });
-  toast('Project deleted');
-  loadProjects();
-  loadDashboard();
+  const r = await api('/api/projects/' + id, { method: 'DELETE' });
+  if (r) { toast('Project deleted'); loadProjects(); loadDashboard(); }
+}
+async function createProject() {
+  const title = document.getElementById('np-title').value.trim();
+  const source = document.getElementById('np-source').value.trim();
+  const recipe = document.getElementById('np-recipe').value;
+  if (!title || !source) { toast('Title and source are required'); return; }
+  toast('Creating project…');
+  const r = await api('/api/projects', { method: 'POST', body: JSON.stringify({ title, source, recipe_id: recipe }) });
+  if (r && r.project) {
+    toast('Project created!');
+    // Auto-run pipeline
+    await runPipeline(r.project.id);
+    document.getElementById('np-title').value = '';
+    document.getElementById('np-source').value = '';
+    nav('projects');
+  } else toast('Failed to create project');
+}
+function dlOutput(id) {
+  const base = getApiUrl();
+  window.open(base + '/api/outputs/' + id + '/download', '_blank');
 }
 
-async function viewProject(projectId) {
-  const p = await api(`/api/projects/${projectId}`);
-  if (!p) return;
-
-  const container = document.getElementById('projects-list');
-  let scenesHtml = '';
-  if (p.scenes && p.scenes.length > 0) {
-    scenesHtml = `
-      <div class="card" style="margin-top:16px;">
-        <div class="card-title">🔪 Scenes (${p.scenes.length})</div>
-        <div class="scene-grid">
-          ${p.scenes.map(s => `
-            <div class="scene-card ${s.selected ? 'selected' : ''}">
-              <div class="scene-thumb">${s.thumbnail ? `<img src="${API}/thumbnails/${s.thumbnail.split('/').pop()}" style="width:100%;aspect-ratio:16/9;object-fit:cover;" onerror="this.parentElement.textContent='🔒'">` : '🔒'}</div>
-              <div class="scene-meta">
-                <div class="scene-score">${(s.combined_score || 0).toFixed(3)}</div>
-                <div class="scene-time">${s.start_time.toFixed(1)}s – ${s.end_time.toFixed(1)}s (${s.duration.toFixed(1)}s)</div>
-              </div>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    `;
-  }
-
-  let jobsHtml = '';
-  if (p.jobs && p.jobs.length > 0) {
-    const latestJob = p.jobs[0];
-    jobsHtml = `
-      <div class="card" style="margin-top:16px;">
-        <div class="card-title">📋 Latest Job <span class="badge badge-${latestJob.status}">${latestJob.status}</span></div>
-        ${latestJob.logs ? `<div class="job-log">${latestJob.logs.substring(-2000)}</div>` : '<p style="color:var(--text-dim);font-size:13px;">No logs yet.</p>'}
-      </div>
-    `;
-  }
-
-  container.innerHTML = `
-    <div class="card">
-      <div class="card-title">${p.title || p.id}</div>
-      <p style="color:var(--text-dim);font-size:13px;margin-bottom:8px;">
-        Source: ${p.source || 'N/A'}<br>
-        Status: <span class="badge badge-${p.status}">${p.status}</span> · Scenes: ${p.scene_count} · Created: ${new Date(p.created_at).toLocaleString()}
-      </p>
-      <button class="btn btn-sm" onclick="loadProjects()">← Back to projects</button>
-      <button class="btn btn-sm" style="margin-left:8px;" onclick="runAutoPipeline('${p.id}')">▶ Run Pipeline</button>
-    </div>
-    ${scenesHtml}
-    ${jobsHtml}
-  `;
-}
-
-// ─── Init ──────────────────────────────────────────────────
-document.getElementById('btn-create-project').addEventListener('click', createProject);
-
+// ── Init ──
 async function init() {
-  await loadRecipes();
+  if (!getApiUrl()) {
+    document.getElementById('cbanner').style.display = 'flex';
+    document.getElementById('apiInput').value = '';
+  }
+  await checkApi();
   await loadDashboard();
-  await loadProjects();
+  setInterval(() => { checkApi(); loadDashboard(); }, 5000);
 }
-
 init();
-setInterval(loadDashboard, 10000);
 </script>
+</div>
 </body>
 </html>
