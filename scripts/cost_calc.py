@@ -2,25 +2,26 @@
 """
 cost_calc.py — Kitchen Bill / Cost Calculator for FFWD Trailer Kitchen
 Usage:
-    python3 scripts/cost_calc.py --project feicht --audio-min 25 --tts-chars 200
+    python3 scripts/cost_calc.py --project feicht --audio-min 25 --tts-hd-chars 200
 """
 
 import json, os, sys
 from datetime import datetime, timezone
 
 RATES = {
-    "whisper":        0.006,
-    "tts_hd":         0.030,
-    "tts_standard":   0.015,
-    "elevenlabs":     0.300,
-    "vision":         0.005,
-    "gpt4o_mini":     0.00015,
-    "agent_tokens":   0.00000015,
+    "whisper":        0.006,      # per minute
+    "tts_hd":         0.030,      # per 1K chars
+    "tts_standard":   0.015,      # per 1K chars
+    "elevenlabs":     0.300,      # per 1K chars
+    "vision":         0.005,      # per call
+    "gpt4o_mini":     0.00015,    # per 1K tokens
+    "agent_in":       0.0000015,  # per token (varies by model)
+    "agent_out":      0.000006,   # per token (varies by model)
 }
 
 def calc(project, audio_min=0, tts_hd_chars=0, tts_chars=0,
          elevenlabs_chars=0, vision_calls=0, gpt4o_mini_tokens=0,
-         agent_tokens=0, notes=""):
+         agent_in_tokens=0, agent_out_tokens=0, notes=""):
     items = []
     if audio_min > 0:
         c = audio_min * RATES["whisper"]
@@ -40,27 +41,53 @@ def calc(project, audio_min=0, tts_hd_chars=0, tts_chars=0,
     if gpt4o_mini_tokens > 0:
         c = gpt4o_mini_tokens / 1000 * RATES["gpt4o_mini"]
         items.append(("GPT-4o-mini Scoring", f"{gpt4o_mini_tokens} Tokens", c))
+    if agent_in_tokens > 0 or agent_out_tokens > 0:
+        c = (agent_in_tokens * RATES["agent_in"]) + (agent_out_tokens * RATES["agent_out"])
+        total_tok = agent_in_tokens + agent_out_tokens
+        items.append(("Küchenchef (Agent LLM)", f"{total_tok:,} Tokens", c))
+
     total = sum(it[2] for it in items)
-    return {"project": project, "ts": datetime.now(timezone.utc).isoformat(),
-            "items": items, "total": round(total, 4), "notes": notes}
+    tip_suggestion = round(total * 0.15, 4)
+
+    return {
+        "project": project,
+        "ts": datetime.now(timezone.utc).isoformat(),
+        "items": items,
+        "total": round(total, 4),
+        "tip": tip_suggestion,
+        "notes": notes,
+    }
 
 def bill(receipt):
     lines = []
-    lines.append("  ╔══════════════════════════╗")
-    lines.append("  ║     K Ü C H E N -       ║")
-    lines.append("  ║       R E C H N U N G   ║")
-    lines.append("  ╚══════════════════════════╝")
+    lines.append("  ╔══════════════════════════════════╗")
+    lines.append("  ║  ▶️▶️▶️ VIDEO KITCHEN              ║")
+    lines.append("  ║  Finest Teaser Soul Food          ║")
+    lines.append("  ║  & Geschmackige Video Roasts      ║")
+    lines.append("  ╚══════════════════════════════════╝")
+    lines.append("")
+    lines.append(f"  Projekt:   {receipt['project']}")
     p = receipt['project'].upper().replace('-','.')
-    lines.append(f"\n  Projekt:   {receipt['project']}")
     lines.append(f"  Token:     #{p}.{receipt['ts'][:10].replace('-','')}")
-    lines.append("  ─────────────────────────────")
+    lines.append(f"  Datum:     {receipt['ts'][:16].replace('T',' ')}")
+    lines.append("  ─────────────────────────────────────")
+    lines.append("")
     for label, qty, cost in receipt['items']:
-        lines.append(f"\n  {label:30s}")
-        lines.append(f"  {qty:25s}      ${cost:.3f}")
-    lines.append("\n  ─────────────────────────────")
-    lines.append(f"  GESAMT                      ${receipt['total']:.4f}")
-    lines.append("  ─────────────────────────────")
-    lines.append("\n  Serviert von: FFWD Kitchen Agent\n")
+        lines.append(f"  {label}")
+        lines.append(f"    {qty}              ${cost:.4f}")
+        lines.append("")
+    lines.append("  ─────────────────────────────────────")
+    lines.append(f"  ZWISCHENSUMME              ${receipt['total']:.4f}")
+    lines.append("")
+    lines.append(f"  💰 Trinkgeld (15%)          ${receipt['tip']:.4f}")
+    lines.append(f"  ─────────────────────────────────────")
+    lines.append(f"  GESAMT                     ${receipt['total'] + receipt['tip']:.4f}")
+    lines.append("  ─────────────────────────────────────")
+    lines.append("")
+    lines.append("  Zahlungsart:   API-Guthoben")
+    lines.append("  Serviert von:  Küchenchef Agent")
+    lines.append("  Danke für Ihren Besuch! 🍽️")
+    lines.append("")
     return "\n".join(lines)
 
 def save(receipt, ledger_path="cost_ledger.json"):
@@ -83,14 +110,15 @@ if __name__ == "__main__":
     p.add_argument("--elevenlabs-chars", type=int, default=0)
     p.add_argument("--vision-calls", type=int, default=0)
     p.add_argument("--gpt-tokens", type=int, default=0)
-    p.add_argument("--agent-tokens", type=int, default=0)
+    p.add_argument("--agent-in-tokens", type=int, default=0)
+    p.add_argument("--agent-out-tokens", type=int, default=0)
     p.add_argument("--notes", default="")
     p.add_argument("--ledger", default="cost_ledger.json")
     p.add_argument("--no-log", action="store_true")
     a = p.parse_args()
     r = calc(a.project, a.audio_min, a.tts_hd_chars, a.tts_chars,
              a.elevenlabs_chars, a.vision_calls, a.gpt_tokens,
-             a.agent_tokens, a.notes)
+             a.agent_in_tokens, a.agent_out_tokens, a.notes)
     print(bill(r))
     if not a.no_log:
         lp = save(r, a.ledger)
