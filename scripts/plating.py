@@ -108,15 +108,15 @@ class PlatingStation:
 
         # Apply transitions
         if transitions == "quick_cuts" and len(clips) > 1:
-            # Quick cuts: no transition, direct concat
-            final = concatenate_videoclips(clips, method="compose")
+            # Quick cuts: no transition, direct concat with chain
+            final = concatenate_videoclips(clips, method="chain")
         elif transitions == "crossfade" and len(clips) > 1:
-            # Crossfade: 0.3s overlap
+            # Crossfade: 0.3s overlap via chain with padding
             final = concatenate_videoclips(
-                clips, method="compose", padding=-0.3
+                clips, method="chain", padding=-0.3
             )
         else:
-            final = concatenate_videoclips(clips, method="compose")
+            final = concatenate_videoclips(clips, method="chain")
 
         # Aspect ratio conversion
         if aspect_ratio == "9:16":

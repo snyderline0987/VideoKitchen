@@ -241,10 +241,20 @@ class PrepStation:
 
             segments = []
             for seg in getattr(response, "segments", []):
+                # Handle both dict and object segment formats
+                if isinstance(seg, dict):
+                    start = seg.get("start", 0)
+                    end = seg.get("end", 0)
+                    text = seg.get("text", "").strip()
+                else:
+                    # Object format (OpenAI SDK v1.x)
+                    start = getattr(seg, "start", 0)
+                    end = getattr(seg, "end", 0)
+                    text = getattr(seg, "text", "").strip()
                 segments.append({
-                    "start": seg.get("start", seg.get("start", 0)),
-                    "end": seg.get("end", seg.get("end", 0)),
-                    "text": seg.get("text", "").strip(),
+                    "start": start,
+                    "end": end,
+                    "text": text,
                 })
 
             return {
