@@ -1,0 +1,48 @@
+[
+  {
+    "project": "taxi-altenspatzen",
+    "ts": "2026-04-26T16:00:24.950486+00:00",
+    "items": [
+      [
+        "Transkription (Whisper API)",
+        "26 Min",
+        0.156
+      ],
+      [
+        "Sprachausgabe (OpenAI TTS HD)",
+        "195 Zeichen",
+        0.00585
+      ],
+      [
+        "Bildanalyse (Vision)",
+        "8 Calls",
+        0.04
+      ]
+    ],
+    "total": 0.2019,
+    "notes": "Taxi Altenspatzen"
+  },
+  {
+    "project": "feicht-show",
+    "ts": "2026-04-26T16:00:56.922726+00:00",
+    "items": [
+      [
+        "Transkription (Whisper API)",
+        "25 Min",
+        0.15
+      ],
+      [
+        "Sprachausgabe (OpenAI TTS HD)",
+        "200 Zeichen",
+        0.006
+      ],
+      [
+        "Bildanalyse (Vision)",
+        "8 Calls",
+        0.04
+      ]
+    ],
+    "total": 0.196,
+    "notes": "Feicht Show #163 Teaser"
+  }
+]
